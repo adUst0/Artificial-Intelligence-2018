@@ -17,27 +17,28 @@ struct pos {
 
 class Maze {
 private:
-    vector<vector<int> > raw;
+    vector<vector<char> > raw;
     int size;
 
 public:
     Maze(int N) : 
-        raw(N, vector<int>(N)), 
+        raw(N, vector<char>(N)), 
         size(N) {}
+
+    Maze(const Maze& other) : raw(other.raw), size(other.size) {}
 
     bool isValidPosition(int i, int j) const {
         return i >= 0 && j >= 0 && i < size && j < size;
     }
     bool isWall(int i, int j) const {
-        return raw[i][j] == 0;
+        return raw[i][j] == '0';
     }
     int getSize() const {
         return size;
     }
-    vector<int>& operator[](const int i) {
+    vector<char>& operator[](const int i) {
         return raw[i];
     }
-
 };
 
 class PathFinder {
@@ -99,20 +100,23 @@ void dfs(PathFinder &pathFinder, pos current, pos target) {
                 dfs(pathFinder, pos(i, j + k), target);
             }
         }
+
     }
 
 }
 
 void showPath(PathFinder &pathFinder, pos end) {
-    while(pathFinder.maze.isValidPosition(end.i, end.j)) {
-        pathFinder.maze[end.i][end.j] = 9;
+    Maze temp = pathFinder.maze;
+
+    while(temp.isValidPosition(end.i, end.j)) {
+        temp[end.i][end.j] = '*';
         end = pathFinder[end.i][end.j];
     }
 
 
-    for(int i = 0; i < pathFinder.maze.getSize(); i++) {
-        for(int j = 0; j < pathFinder.maze.getSize(); j++) {
-            cout << pathFinder.maze[i][j] << " ";
+    for(int i = 0; i < temp.getSize(); i++) {
+        for(int j = 0; j < temp.getSize(); j++) {
+            cout << temp[i][j] << " ";
         }
         cout << endl;
     }
