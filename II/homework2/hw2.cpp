@@ -1,7 +1,8 @@
 #include <iostream>
 #include <queue>
-#include <set>
+#include <vector>
 #include <cstring>
+#include <algorithm>
 using namespace std;
 
 const int N = 3;
@@ -134,10 +135,10 @@ vector<NodeInfo> neighbors(NodeInfo node) {
 }
 
 void solve() {
-    set<NodeInfo> visited;
+    vector<NodeInfo> visited;
     priority_queue<NodeInfo> pq;
 
-    visited.insert(start);
+    visited.push_back(start);
     pq.push(start);
 
     while(!pq.empty()) {
@@ -150,10 +151,10 @@ void solve() {
         }
 
         for(NodeInfo &node : neighbors(current)) {
-            if(visited.count(node) == 0) {
+            if(find(visited.begin(), visited.end(), node) == visited.end()) {
                 node.distance = current.distance + 1;
                 node.setPrev(current);
-                visited.insert(node);
+                visited.push_back(node);
                 pq.push(node);
             }
         }
@@ -184,7 +185,7 @@ int main() {
         }
     }
 
-    cout << start.getManh() << endl;
+    // cout << start.getManh() << endl;
 
     solve();
 
