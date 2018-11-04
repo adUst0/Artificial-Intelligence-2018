@@ -3,57 +3,16 @@
 #include <vector>
 #include <cstring>
 #include <algorithm>
+#include <stack>
 using namespace std;
 
-const int N = 3;
-
-struct Node {
-    int raw[N][N];
-    int* operator[](int n) {
-        return raw[n];
-    }
-    int at(int i, int j) const {
-        return raw[i][j];
-    }
-};
-
-struct NodeInfo
+class NodeInfo
 {
-    Node node;
-    Node prev;
+    vector<vector<int>> currentState;
+    vector<vector<int>> prevState;
     int distance;
+    int size;
 
-    NodeInfo() : distance(0) {
-        memset(&node, -1, sizeof(node));
-        memset(&prev, -1, sizeof(prev));
-    }
-
-    void copyNode(const NodeInfo& other) {
-        memcpy(&node, &other.node, sizeof(node));
-    }
-
-    void setPrev(const NodeInfo& other) {
-        memcpy(&prev, &other.node, sizeof(prev));
-    }
-
-    bool operator==(const NodeInfo& other) const {
-        return memcmp(&node, &other.node, sizeof(node)) == 0;
-    }
-
-    bool operator<(const NodeInfo& other) const {
-        return *this > other;
-    }
-
-    // break some encapsulation
-    int* operator[](int n) {
-        return node[n];
-    }
-
-    int at(int i, int j) const {
-        return node.raw[i][j];
-    }
-
-public:
     bool operator>(const NodeInfo& other) const {
         int wthis = distance + this->getManh();
         int wother = other.distance + other.getManh();
@@ -64,16 +23,17 @@ public:
     int getManh() const {
         int sum = 0;
 
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < N; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 pair<int, int> realPosition = make_pair(i, j);
                 pair<int, int> neededPosition;
+                int value = currentState[i][j];
 
-                if(at(i, j) == 0) {
-                    neededPosition = make_pair(N - 1, N - 1);
+                if (value == 0) {
+                    neededPosition = make_pair(size - 1, size - 1);
                 }
                 else {
-                    neededPosition = make_pair((at(i, j) - 1) / N, (at(i, j) - 1) % N);
+                    neededPosition = make_pair((value - 1) / size, (value - 1) % size);
                 }
 
                 sum += abs(neededPosition.first - realPosition.first) + abs(neededPosition.second - realPosition.second);
@@ -83,111 +43,224 @@ public:
         return sum;
     }
 
+public:
+    NodeInfo(int size) : 
+        distance(0),
+        size(size),
+        currentState(vector<vector<int>>(size, vector<int>(size, -1))), 
+        prevState(vector<vector<int>>(size, vector<int>(size, -1))) 
+    {
+
+    }
+
+    void setCurrentState(const vector<vector<int>>& state) {
+        if (state.size() != size) {
+            cerr << "Error: Trying to setCurrentState with different dimensions" << endl;
+            exit(-1);
+        }
+        this->currentState = state;
+    }
+
+    const vector<vector<int>>& getCurrentState() const {
+        return currentState;
+    }
+
+    vector<vector<int>>& getCurrentState() {
+        return currentState;
+    }
+
+    void setPrevState(const vector<vector<int>>& state) {
+        if (state.size() != size) {
+            cerr << "Error: Trying to setPrevState with different dimensions" << endl;
+            exit(-1);
+        }
+        this->prevState = state;
+    }
+
+    const vector<vector<int>>& getPrevState() const {
+        return prevState;
+    }
+
+    int getDistance() const {
+        return distance;
+    }
+
+    void setDistance(int distance) {
+        this->distance = distance;
+    }
+
+    int getSize() const {
+        return size;
+    }
+
+    bool operator==(const NodeInfo& other) const {
+        return currentState == other.currentState;
+    }
+
+    bool operator!=(const NodeInfo& other) const {
+        return !operator==(other);
+    }
+
+    bool operator<(const NodeInfo& other) const {
+        return *this > other;
+    }
+
+    bool isFinalState() const {
+        return getManh() == 0;
+    }
+
+    pair<int, int> findEmptyBlockPos() const {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (currentState[i][j] == 0) {
+                    return make_pair(i, j);
+                }
+            }
+        }
+    }
+
+    vector<NodeInfo> neighbors() const {
+        vector<NodeInfo> Neighbors;
+        pair<int, int> emptyBlockPos = findEmptyBlockPos();
+
+        int left = emptyBlockPos.second + 1;
+        int right = emptyBlockPos.second - 1;
+        int up = emptyBlockPos.first + 1;
+        int down = emptyBlockPos.first - 1;
+
+        NodeInfo node(size);
+
+        if (left < size) {
+            node.setCurrentState(this->currentState);
+            swap(node.currentState[emptyBlockPos.first][left],
+                 node.currentState[emptyBlockPos.first][emptyBlockPos.second]);
+            Neighbors.push_back(node);
+        }
+        if (right >= 0) {
+            node.setCurrentState(this->currentState);
+            swap(node.currentState[emptyBlockPos.first][right],
+                 node.currentState[emptyBlockPos.first][emptyBlockPos.second]);
+            Neighbors.push_back(node);
+        }
+        if (up < size) {
+            node.setCurrentState(this->currentState);
+            swap(node.currentState[up][emptyBlockPos.second],
+                 node.currentState[emptyBlockPos.first][emptyBlockPos.second]);
+            Neighbors.push_back(node);
+        }
+        if (down >= 0) {
+            node.setCurrentState(this->currentState);
+            swap(node.currentState[down][emptyBlockPos.second],
+                 node.currentState[emptyBlockPos.first][emptyBlockPos.second]);
+            Neighbors.push_back(node);
+        }
+
+        return Neighbors;
+    }
 };
 
-NodeInfo start;
-NodeInfo final;
-
-bool isFinal(NodeInfo node) {
-    return memcmp(node.node.raw, final.node.raw, sizeof(node.node.raw)) == 0;
-}
-
-pair<int, int> findEmptyPos(NodeInfo node) {
-    for(int i = 0; i < N; i++) {
-        for(int j = 0; j < N; j++) {
-            if(node[i][j] == 0) {
-                return make_pair(i, j);
-            }
+const NodeInfo& findPrevNode(const vector<NodeInfo>& visited, const NodeInfo& current) {
+    for (const NodeInfo& node : visited) {
+        if (node.getCurrentState() == current.getPrevState()) {
+            return node;
         }
     }
 }
 
-vector<NodeInfo> neighbors(NodeInfo node) {
-    vector<NodeInfo> neigh;
-    pair<int, int> emptyPos = findEmptyPos(node);
+void printPath(NodeInfo& start, NodeInfo& current, vector<NodeInfo> visited) {
+    int size = current.getSize();
+    stack<string> s;
 
-    if(emptyPos.second + 1 < N) {
-        // left
-        neigh.push_back(NodeInfo());
-        neigh[neigh.size() - 1].copyNode(node); // ugly code. Maybe refactoring in the future. For now is better performance.
-        swap(neigh[neigh.size() - 1][emptyPos.first][emptyPos.second + 1], neigh[neigh.size() - 1][emptyPos.first][emptyPos.second]);
-    }
-    if(emptyPos.second - 1 >= 0) {
-        // right
-        neigh.push_back(NodeInfo());
-        neigh[neigh.size() - 1].copyNode(node); // ugly code. Maybe refactoring in the future. For now is better performance.
-        swap(neigh[neigh.size() - 1][emptyPos.first][emptyPos.second - 1], neigh[neigh.size() - 1][emptyPos.first][emptyPos.second]);
-    }
-    if(emptyPos.first + 1 < N) {
-        // up
-        neigh.push_back(NodeInfo());
-        neigh[neigh.size() - 1].copyNode(node); // ugly code. Maybe refactoring in the future. For now is better performance.
-        swap(neigh[neigh.size() - 1][emptyPos.first + 1][emptyPos.second], neigh[neigh.size() - 1][emptyPos.first][emptyPos.second]);
-    }
-    if(emptyPos.first - 1 >= 0) {
-        // down
-        neigh.push_back(NodeInfo());
-        neigh[neigh.size() - 1].copyNode(node); // ugly code. Maybe refactoring in the future. For now is better performance.
-        swap(neigh[neigh.size() - 1][emptyPos.first - 1][emptyPos.second], neigh[neigh.size() - 1][emptyPos.first][emptyPos.second]);
+    while (current != start) {
+        pair<int, int> emptyBlockPos = current.findEmptyBlockPos();
+
+        int left = emptyBlockPos.second - 1;
+        int right = emptyBlockPos.second + 1;
+        int up = emptyBlockPos.first - 1;
+        int down = emptyBlockPos.first + 1;
+
+        if (left >= 0 && current.getPrevState()[emptyBlockPos.first][left] == 0) {
+            s.push("left");
+        }
+        else if (right < size && current.getPrevState()[emptyBlockPos.first][right] == 0) {
+            s.push("right");
+        }
+        else if (up >= 0 && current.getPrevState()[up][emptyBlockPos.second] == 0) {
+            s.push("up");
+        }
+        else if (down < size && current.getPrevState()[down][emptyBlockPos.second] == 0) {
+            s.push("down");
+        }
+
+        current.findEmptyBlockPos();
+        current = findPrevNode(visited, current);
     }
 
-    return neigh;
+    while (!s.empty()) {
+        cout << s.top() << endl;
+        s.pop();
+    }
 }
 
-void solve() {
+void solve(NodeInfo& start) {
     vector<NodeInfo> visited;
     priority_queue<NodeInfo> pq;
 
     visited.push_back(start);
     pq.push(start);
 
-    while(!pq.empty()) {
+    while (!pq.empty()) {
         NodeInfo current = pq.top();
         pq.pop();
 
-        if(isFinal(current)) {
-            cout << current.distance << endl;
+        if (current.isFinalState()) {
+            cout << current.getDistance() << endl;
+            printPath(start, current, visited);
             return;
         }
 
-        for(NodeInfo &node : neighbors(current)) {
-            if(find(visited.begin(), visited.end(), node) == visited.end()) {
-                node.distance = current.distance + 1;
-                node.setPrev(current);
+        for (NodeInfo &node : current.neighbors()) {
+            if (find(visited.begin(), visited.end(), node) == visited.end()) {
+                node.setDistance(current.getDistance() + 1);
+                node.setPrevState(current.getCurrentState());
                 visited.push_back(node);
                 pq.push(node);
             }
         }
     }
-
 }
 
 int main() {
+    int n = 0;
 
-    int st[N][N] = {
-        {6, 2, 3},
-        {1, 4, 8},
-        {7, 0, 5}
-    };
-    int end[N][N] = {
-        {1, 2, 3},
-        {4, 5, 6},
-        {7, 8, 0}
-    };
+    cout << "N = ";
+    cin >> n;
 
-    // 1,1 - 2,1 = 1
-    // 2,1 - 1,1 = 1
+    NodeInfo start(n);
 
-    for(int i = 0; i < N; i++) {
-        for(int j = 0; j < N; j++) {
-            start[i][j] = st[i][j];
-            final[i][j] = end[i][j];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> start.getCurrentState()[i][j];
         }
     }
 
-    // cout << start.getManh() << endl;
-
-    solve();
+    solve(start);
 
     return 0;
 }
+
+/*
+3
+6 2 3
+1 4 8
+7 0 5
+
+*/
+
+/*
+3
+1 2 3
+4 5 6
+0 7 8
+
+*/
