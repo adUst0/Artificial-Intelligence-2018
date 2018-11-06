@@ -15,7 +15,7 @@
 typedef unsigned char boolean;
 typedef unsigned char uint8;
 typedef char sint8;
-typedef unsigned short uin16;
+typedef unsigned short uint16;
 typedef short sint16;
 typedef unsigned int uint32;
 typedef int sint32;
@@ -151,16 +151,12 @@ static void printBoard(int arr[], int size) {
 
 void resetBoard(int arr[], int size) {
 
-    int startCol = rand() % size;
+    const int MAX_ITERATIONS = size * 3;
 
-    int rowIndex = 0;
-
-    for (int col = startCol; col >= 0; col--) {
-        arr[col] = rowIndex++;
-    }
-
-    for (int col = startCol + 1; col < size; col++) {
-        arr[col] = rowIndex++;
+    for (int k = 0; k < MAX_ITERATIONS; k++) {
+        for (int i = 0; i < size; i++) {
+            arr[i] = rand() % size;
+        }
     }
 }
 
@@ -175,6 +171,12 @@ int getColWithMaxConflicts(int arr[], int size) {
         if (conflicts > maxConflictsCount) {
             maxConflictsCount = conflicts;
             colWithMaxConflicts = col;
+        }
+        else if (conflicts == maxConflictsCount) {
+            if (rand() % 2) {
+                maxConflictsCount = conflicts;
+                colWithMaxConflicts = col;
+            }
         }
     }
 
@@ -199,6 +201,12 @@ int getRowWithMinConflicts(int arr[], int size, int col) {
             rowWithMinConflicts = i;
             minConflictsCount = conflicts;
         }
+        else if (conflicts == minConflictsCount) {
+            if (rand() % 2) {
+                rowWithMinConflicts = i;
+                minConflictsCount = conflicts;
+            }
+        }
     }
     arr[col] = queenOriginalRow; // reset the initial value
 
@@ -208,6 +216,12 @@ int getRowWithMinConflicts(int arr[], int size, int col) {
         if (conflicts < minConflictsCount) {
             rowWithMinConflicts = i;
             minConflictsCount = conflicts;
+        }
+        else if (conflicts == minConflictsCount) {
+            if (rand() % 2) {
+                rowWithMinConflicts = i;
+                minConflictsCount = conflicts;
+            }
         }
     }
     arr[col] = queenOriginalRow; // reset the initial value
@@ -251,19 +265,17 @@ boolean findSolution(int arr[], int size) {
 
 void solve(int arr[], int size) {
 
-    const int MAX_RETRIES = 1000;
+    const int MAX_RETRIES = 5;
 
     for (int i = 0; i < MAX_RETRIES; i++) {
         if (findSolution(arr, size)) {
             printf("Success!\n");
-            printBoard(arr, size);
-            system("PAUSE");
+            // printBoard(arr, size);
             exit(EXIT_SUCCESS);
         }
     }
 
     printf("No solution was found!\n");
-    system("PAUSE");
     exit(EXIT_FAILURE);
 }
 
@@ -271,7 +283,7 @@ int main() {
 
     srand(time(0));
 
-    int n = 10;
+    int n = 400;
 
 #ifdef DYN_BOARD
     int *rowIndex = malloc(n * sizeof(int));
