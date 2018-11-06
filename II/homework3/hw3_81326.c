@@ -13,14 +13,7 @@
 //------------------------------------------------------------------------------
 
 typedef unsigned char boolean;
-typedef unsigned char uint8;
-typedef char sint8;
-typedef unsigned short uint16;
-typedef short sint16;
-typedef unsigned int uint32;
-typedef int sint32;
-typedef unsigned long long uint64;
-typedef long long sint64;
+typedef char          sint8;
 
 //------------------------------------------------------------------------------
 // GLOBAL CONSTANTS DEFINITIONS
@@ -40,20 +33,20 @@ typedef long long sint64;
 // PRIVATE HELPER FUNCTIONS
 //------------------------------------------------------------------------------
 
-static int getHorizontalConflictsOfColumn(int arr[], int size,
-    int col) {
+// sint8 g_conflicts[BOARD_MAX_SIZE];
 
+static int getHorizontalConflictsOfCell(int arr[], int size, int row, int col) {
     int conflicts = 0;
 
     for (int i = col - 1; i >= 0; i--) {
-        if (arr[i] == arr[col]) {
+        if (arr[i] == row) {
             ++conflicts;
             break;
         }
     }
 
     for (int i = col + 1; i < size; i++) {
-        if (arr[i] == arr[col]) {
+        if (arr[i] == row) {
             ++conflicts;
             break;
         }
@@ -62,14 +55,13 @@ static int getHorizontalConflictsOfColumn(int arr[], int size,
     return conflicts;
 }
 
-static int getMainDiagConflictsOfColumn(int arr[], int size, int col) {
-
+static int getMainDiagConflictsOfCell(int arr[], int size, int row, int col) {
     int conflicts = 0;
 
     for (int x = col - 1; x >= 0; x--) {
         int y = arr[x];
 
-        if (col - arr[col] == x - y) {
+        if (col - row == x - y) {
             conflicts++;
             break;
         }
@@ -78,7 +70,7 @@ static int getMainDiagConflictsOfColumn(int arr[], int size, int col) {
     for (int x = col + 1; x < size; x++) {
         int y = arr[x];
 
-        if (col - arr[col] == x - y) {
+        if (col - row == x - y) {
             conflicts++;
             break;
         }
@@ -87,15 +79,13 @@ static int getMainDiagConflictsOfColumn(int arr[], int size, int col) {
     return conflicts;
 }
 
-static int getSecDiagConflictsOfColumn(int arr[], int size,
-    int col) {
-
+static int getSecDiagConflictsOfCell(int arr[], int size, int row, int col) {
     int conflicts = 0;
 
     for (int x = col - 1; x >= 0; x--) {
         int y = arr[x];
 
-        if (col + arr[col] == x + y) {
+        if (col + row == x + y) {
             conflicts++;
             break;
         }
@@ -104,7 +94,7 @@ static int getSecDiagConflictsOfColumn(int arr[], int size,
     for (int x = col + 1; x < size; x++) {
         int y = arr[x];
 
-        if (col + arr[col] == x + y) {
+        if (col + row == x + y) {
             conflicts++;
             break;
         }
@@ -117,9 +107,9 @@ static int getConflictsOfColumn(int arr[], int size, int col) {
 
     int conflicts = 0;
 
-    conflicts += getHorizontalConflictsOfColumn(arr, size, col);
-    conflicts += getMainDiagConflictsOfColumn(arr, size, col);
-    conflicts += getSecDiagConflictsOfColumn(arr, size, col);
+    conflicts += getHorizontalConflictsOfCell(arr, size, arr[col], col);
+    conflicts += getMainDiagConflictsOfCell(arr, size, arr[col], col);
+    conflicts += getSecDiagConflictsOfCell(arr, size, arr[col], col);
 
     return conflicts;
 }
@@ -158,6 +148,10 @@ void resetBoard(int arr[], int size) {
             arr[i] = rand() % size;
         }
     }
+
+    // for (int i = 0; i < size; i++) {
+    //     g_conflicts[i] = getConflictsOfColumn(arr, size, i);
+    // }
 }
 
 int getColWithMaxConflicts(int arr[], int size) {
@@ -166,6 +160,7 @@ int getColWithMaxConflicts(int arr[], int size) {
     int maxConflictsCount = 0;
 
     for (int col = 0; col < size; col++) {
+        // int conflicts = g_conflicts[col];
         int conflicts = getConflictsOfColumn(arr, size, col);
 
         if (conflicts > maxConflictsCount) {
@@ -240,10 +235,13 @@ boolean hasConflicts(int arr[], int size) {
     return FALSE;
 }
 
+void updateConflicts(int arr[], int size, int newCol, int oldCol) {
+
+}
 
 boolean findSolution(int arr[], int size) {
 
-    const int K = 5;
+    const int K = 3;
     const int MAX_ITERATIONS = K * size;
 
     resetBoard(arr, size);
@@ -252,7 +250,9 @@ boolean findSolution(int arr[], int size) {
 
     for (int i = 0; i < MAX_ITERATIONS; i++) {
         int col = getColWithMaxConflicts(arr, size);
-        arr[col] = getRowWithMinConflicts(arr, size, col);
+        int rowWithMinConflicts = getRowWithMinConflicts(arr, size, col);
+        arr[col] = rowWithMinConflicts;
+        updateConflicts(arr, size, col, rowWithMinConflicts);
         // printBoard(arr, size);
 
         if (!hasConflicts(arr, size)) {
@@ -283,7 +283,7 @@ int main() {
 
     srand(time(0));
 
-    int n = 400;
+    int n = 800;
 
 #ifdef DYN_BOARD
     int *rowIndex = malloc(n * sizeof(int));
