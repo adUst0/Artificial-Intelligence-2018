@@ -1,0 +1,55 @@
+4 Iterations
+Execution time: 0.30 seconds
+Execution time: 0.30 seconds
+Execution time: 0.30 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.31 seconds
+Execution time: 0.32 seconds
+Execution time: 0.32 seconds
+Execution time: 0.32 seconds
+Execution time: 0.32 seconds
+Execution time: 0.32 seconds
+Execution time: 0.32 seconds
+Execution time: 0.33 seconds
+Execution time: 0.34 seconds
+Execution time: 0.46 seconds
+Execution time: 0.46 seconds
+Execution time: 0.47 seconds
+Execution time: 0.47 seconds
+Execution time: 0.47 seconds
+Execution time: 0.47 seconds
+Execution time: 0.47 seconds
+Execution time: 0.77 seconds
+Execution time: 0.78 seconds
+Execution time: 0.78 seconds
+Execution time: 0.78 seconds
+Execution time: 0.78 seconds
+Execution time: 0.78 seconds
+Execution time: 0.91 seconds
+Execution time: 0.91 seconds
+Execution time: 0.94 seconds
+Execution time: 1.07 seconds
+Execution time: 1.09 seconds
+Execution time: 1.21 seconds
+Execution time: 1.69 seconds
+Execution time: 1.75 seconds
+Execution time: 1.91 seconds
+Execution time: 1.97 seconds
+Execution time: 1.99 seconds
+Execution time: 2.57 seconds
+Execution time: 2.67 seconds
+Execution time: 3.92 seconds
+Execution time: 5.62 seconds
+Execution time: 5.63 seconds
+Execution time: 6.70 seconds
+
+Best: 0.3 seconds
+Worst: 6.70 seconds
+Tota: 56.77 seconds
