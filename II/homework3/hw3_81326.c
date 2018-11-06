@@ -1,53 +1,245 @@
+//------------------------------------------------------------------------------
+// INCLUDED FILES
+//------------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+
+//------------------------------------------------------------------------------
+// TYPE DEFINITIONS
+//------------------------------------------------------------------------------
 
 typedef unsigned char boolean;
 typedef unsigned char uint8;
 typedef char sint8;
-typedef unsigned short uint16;
+typedef unsigned short uin16;
 typedef short sint16;
 typedef unsigned int uint32;
 typedef int sint32;
 typedef unsigned long long uint64;
 typedef long long sint64;
 
+//------------------------------------------------------------------------------
+// GLOBAL CONSTANTS DEFINITIONS
+//------------------------------------------------------------------------------
+
 #ifndef FALSE
-    #define FALSE (0U)
+#define FALSE (0U)
 #endif
 #ifndef TRUE
-    #define TRUE  (1U)
+#define TRUE  (1U)
 #endif
 
-void resetBoard(uint16* arr, uint16 size) {
-    for (uint16 i = 0; i < size; i++) {
-        arr[i] = rand() % size;
+#define BOARD_MAX_SIZE 32000
+// #define DYN_BOARD
+
+//------------------------------------------------------------------------------
+// PRIVATE HELPER FUNCTIONS
+//------------------------------------------------------------------------------
+
+static int getHorizontalConflictsOfColumn(int arr[], int size,
+    int col) {
+
+    int conflicts = 0;
+
+    for (int i = col - 1; i >= 0; i--) {
+        if (arr[i] == arr[col]) {
+            ++conflicts;
+            break;
+        }
+    }
+
+    for (int i = col + 1; i < size; i++) {
+        if (arr[i] == arr[col]) {
+            ++conflicts;
+            break;
+        }
+    }
+
+    return conflicts;
+}
+
+static int getMainDiagConflictsOfColumn(int arr[], int size, int col) {
+
+    int conflicts = 0;
+
+    for (int x = col - 1; x >= 0; x--) {
+        int y = arr[x];
+
+        if (col - arr[col] == x - y) {
+            conflicts++;
+            break;
+        }
+    }
+
+    for (int x = col + 1; x < size; x++) {
+        int y = arr[x];
+
+        if (col - arr[col] == x - y) {
+            conflicts++;
+            break;
+        }
+    }
+
+    return conflicts;
+}
+
+static int getSecDiagConflictsOfColumn(int arr[], int size,
+    int col) {
+
+    int conflicts = 0;
+
+    for (int x = col - 1; x >= 0; x--) {
+        int y = arr[x];
+
+        if (col + arr[col] == x + y) {
+            conflicts++;
+            break;
+        }
+    }
+
+    for (int x = col + 1; x < size; x++) {
+        int y = arr[x];
+
+        if (col + arr[col] == x + y) {
+            conflicts++;
+            break;
+        }
+    }
+
+    return conflicts;
+}
+
+static int getConflictsOfColumn(int arr[], int size, int col) {
+
+    int conflicts = 0;
+
+    conflicts += getHorizontalConflictsOfColumn(arr, size, col);
+    conflicts += getMainDiagConflictsOfColumn(arr, size, col);
+    conflicts += getSecDiagConflictsOfColumn(arr, size, col);
+
+    return conflicts;
+}
+
+static void printBoard(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (arr[j] != i) {
+                printf("_ ");
+            }
+            else {
+                printf("* ");
+            }
+        }
+        printf("\n");
+    }
+
+    printf("\n");
+}
+
+//------------------------------------------------------------------------------
+// PUBLIC FUNCTIONS
+//------------------------------------------------------------------------------
+
+void resetBoard(int arr[], int size) {
+
+    int startCol = rand() % size;
+
+    int rowIndex = 0;
+
+    for (int col = startCol; col >= 0; col--) {
+        arr[col] = rowIndex++;
+    }
+
+    for (int col = startCol + 1; col < size; col++) {
+        arr[col] = rowIndex++;
     }
 }
 
-uint16 getColWithMaxConflicts(uint16* arr, uint16 size) {
-    return 0U;
+int getColWithMaxConflicts(int arr[], int size) {
+
+    int colWithMaxConflicts = 0;
+    int maxConflictsCount = 0;
+
+    for (int col = 0; col < size; col++) {
+        int conflicts = getConflictsOfColumn(arr, size, col);
+
+        if (conflicts > maxConflictsCount) {
+            maxConflictsCount = conflicts;
+            colWithMaxConflicts = col;
+        }
+    }
+
+    return colWithMaxConflicts;
 }
 
-uint16 getRowWithMinConflicts(uint16* arr, uint16 size) {
-    return 0U;
+// Put the queen to every possible row and calculate the conflicts. 
+// Restore queen's original position before returning
+// Return: the rowIndex with minimum conflicts
+int getRowWithMinConflicts(int arr[], int size, int col) {
+
+    // Keep the original position of the queen
+    const int queenOriginalRow = arr[col];
+
+    int rowWithMinConflicts = queenOriginalRow;
+    int minConflictsCount = 30000;
+
+    for (int i = queenOriginalRow - 1; i >= 0; i--) {
+        arr[col] = i;
+        int conflicts = getConflictsOfColumn(arr, size, col);
+        if (conflicts < minConflictsCount) {
+            rowWithMinConflicts = i;
+            minConflictsCount = conflicts;
+        }
+    }
+    arr[col] = queenOriginalRow; // reset the initial value
+
+    for (int i = queenOriginalRow + 1; i < size; i++) {
+        arr[col] = i;
+        int conflicts = getConflictsOfColumn(arr, size, col);
+        if (conflicts < minConflictsCount) {
+            rowWithMinConflicts = i;
+            minConflictsCount = conflicts;
+        }
+    }
+    arr[col] = queenOriginalRow; // reset the initial value
+
+    return rowWithMinConflicts;
 }
 
-boolean hasConflicts(uint16* arr, uint16 size) {
+boolean hasConflicts(int arr[], int size) {
+
+    for (int i = 0; i < size; i++) {
+        if (getConflictsOfColumn(arr, size, i) > 0) {
+            return TRUE;
+        }
+    }
+
     return FALSE;
 }
 
 
-boolean solve(uint16* arr, uint16 size) {
-    const uint8 K = 3;
-    const uint32 MAX_ITERATIONS = K * size;
+boolean findSolution(int arr[], int size) {
+
+    const int K = 5;
+    const int MAX_ITERATIONS = K * size;
 
     resetBoard(arr, size);
 
-    for (uint32 i = 0; i < MAX_ITERATIONS; i++) {
-        uint16 col = getColWithMaxConflicts(arr, size);
-        arr[col] = getRowWithMinConflicts(arr, size);
+    // printBoard(arr, size);
+
+    for (int i = 0; i < MAX_ITERATIONS; i++) {
+        int col = getColWithMaxConflicts(arr, size);
+        arr[col] = getRowWithMinConflicts(arr, size, col);
+        // printBoard(arr, size);
 
         if (!hasConflicts(arr, size)) {
             return TRUE;
@@ -57,23 +249,37 @@ boolean solve(uint16* arr, uint16 size) {
     return FALSE;
 }
 
-int main() {
-    srand(time(NULL));
+void solve(int arr[], int size) {
 
-    const uint8 MAX_RETRIES = 100;
+    const int MAX_RETRIES = 1000;
 
-    uint16 n = 10U;
-    uint16 *rowIndex = malloc(n * sizeof(uint16));
-
-    for (uint8 i = 0; i < MAX_RETRIES; i++) {
-        if (solve(rowIndex, n)) {
+    for (int i = 0; i < MAX_RETRIES; i++) {
+        if (findSolution(arr, size)) {
             printf("Success!\n");
+            printBoard(arr, size);
+            system("PAUSE");
             exit(EXIT_SUCCESS);
         }
     }
-    
-    printf("No solution was found!\n");
-    exit(EXIT_FAILURE);
 
-    return 0;
+    printf("No solution was found!\n");
+    system("PAUSE");
+    exit(EXIT_FAILURE);
+}
+
+int main() {
+
+    srand(time(0));
+
+    int n = 10;
+
+#ifdef DYN_BOARD
+    int *rowIndex = malloc(n * sizeof(int));
+#else
+    int rowIndex[BOARD_MAX_SIZE];
+#endif
+
+    solve(rowIndex, n);
+
+    return EXIT_SUCCESS;
 }
