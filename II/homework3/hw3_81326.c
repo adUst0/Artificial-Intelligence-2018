@@ -12,8 +12,15 @@
 // TYPE DEFINITIONS
 //------------------------------------------------------------------------------
 
-typedef unsigned char boolean;
-typedef char          sint8;
+typedef unsigned char      boolean;
+typedef char               sint8;
+typedef unsigned char      uint8;
+typedef short              sint16;
+typedef unsigned short     uint16;
+typedef int                sint32;
+typedef unsigned int       uint32;
+typedef long long          sint64;
+typedef unsigned long long uint64;
 
 //------------------------------------------------------------------------------
 // GLOBAL CONSTANTS DEFINITIONS
@@ -26,24 +33,24 @@ typedef char          sint8;
 #define TRUE  (1U)
 #endif
 
-#define BOARD_MAX_SIZE 32000
+#define BOARD_MAX_SIZE 12000
 
 //------------------------------------------------------------------------------
 // PRIVATE HELPER FUNCTIONS
 //------------------------------------------------------------------------------
 
-int g_conflicts[BOARD_MAX_SIZE];
-int totalConflicts = 0;
+uint16 g_conflicts[BOARD_MAX_SIZE];
+uint16 totalConflicts = 0;
 
-static int getConflictsOfCell(int arr[], int size, int row, int col) {
-    int conflicts = 0;
+static uint16 getConflictsOfCell(uint16 arr[], uint16 size, uint16 row, uint16 col) {
+    uint16 conflicts = 0;
 
-    for (int x = 0; x < size; x++) {
+    for (uint16 x = 0; x < size; x++) {
         if (x == col) {
             continue;
         }
 
-        int y = arr[x];
+        uint16 y = arr[x];
 
         if (y == row || abs(y - row) == abs(x - col)) {
             conflicts++;
@@ -53,14 +60,14 @@ static int getConflictsOfCell(int arr[], int size, int row, int col) {
     return conflicts;
 }
 
-static void printBoard(int arr[], int size) {
-    for (int i = 0; i < size; i++) {
+static void printBoard(uint16 arr[], uint16 size) {
+    for (uint16 i = 0; i < size; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
+    for (uint16 i = 0; i < size; i++) {
+        for (uint16 j = 0; j < size; j++) {
             if (arr[j] != i) {
                 printf("_ ");
             }
@@ -78,25 +85,25 @@ static void printBoard(int arr[], int size) {
 // PUBLIC FUNCTIONS
 //------------------------------------------------------------------------------
 
-void resetBoard(int arr[], int size) {
-    for (int i = 0; i < size; i++) {
+void resetBoard(uint16 arr[], uint16 size) {
+    for (uint16 i = 0; i < size; i++) {
         arr[i] = i;
     }
 
-    const int MAX_ITERATIONS = 1;
+    const uint16 MAX_ITERATIONS = 1;
 
-    for (int k = 0; k < MAX_ITERATIONS; k++) {
-        for (int i = 0; i < size; i++) {
-            int j = rand() % size;
-            int temp = arr[i];
+    for (uint16 k = 0; k < MAX_ITERATIONS; k++) {
+        for (uint16 i = 0; i < size; i++) {
+            uint16 j = rand() % size;
+            uint16 temp = arr[i];
             arr[i] = arr[j];
             arr[j] = temp;
         }
     }
 }
 
-void calculateConflicts(int arr[], int size) {
-    for (int i = 0; i < size; i++) {
+void calculateConflicts(uint16 arr[], uint16 size) {
+    for (uint16 i = 0; i < size; i++) {
         g_conflicts[i] = getConflictsOfCell(arr, size, arr[i], i);
         totalConflicts += g_conflicts[i];
         // printf("%d ", g_conflicts[i]);
@@ -104,16 +111,16 @@ void calculateConflicts(int arr[], int size) {
     // printf("\n");
 }
 
-int getColWithMaxConflicts(int arr[], int size) {
+uint16 getColWithMaxConflicts(uint16 arr[], uint16 size) {
 
-    int colWithMaxConflicts = 0;
-    int maxConflicts = 0;
+    uint16 colWithMaxConflicts = 0;
+    uint16 maxConflicts = 0;
 
-    int candidates[BOARD_MAX_SIZE];
-    int candidatesCount = 0;
+    uint16 candidates[BOARD_MAX_SIZE];
+    uint16 candidatesCount = 0;
 
-    for (int col = 0; col < size; col++) {
-        int conflicts = g_conflicts[col];
+    for (uint16 col = 0; col < size; col++) {
+        uint16 conflicts = g_conflicts[col];
 
         if (conflicts > maxConflicts) {
             maxConflicts = conflicts;
@@ -127,25 +134,25 @@ int getColWithMaxConflicts(int arr[], int size) {
         }
     }
 
-    int idx = rand() % candidatesCount;
+    uint16 idx = rand() % candidatesCount;
     return candidates[idx];
 }
 
 // Return: the rowIndex where the queen will make minimum conflicts
-int getRowWithMinConflicts(int arr[], int size, int col) {
+uint16 getRowWithMinConflicts(uint16 arr[], uint16 size, uint16 col) {
 
-    int rowWithMinConflicts = arr[col];
-    int minConflictsCount = 30000;
+    uint16 rowWithMinConflicts = arr[col];
+    uint16 minConflictsCount = 30000;
 
-    int candidates[BOARD_MAX_SIZE];
-    int candidatesCount = 0;
+    uint16 candidates[BOARD_MAX_SIZE];
+    uint16 candidatesCount = 0;
 
-    for (int row = 0; row < size; row++) {
+    for (uint16 row = 0; row < size; row++) {
         if (row == arr[col]) {
             continue;
         }
 
-        int conflicts = getConflictsOfCell(arr, size, row, col);
+        uint16 conflicts = getConflictsOfCell(arr, size, row, col);
 
         if (conflicts < minConflictsCount) {
             rowWithMinConflicts = row;
@@ -159,22 +166,22 @@ int getRowWithMinConflicts(int arr[], int size, int col) {
         }
     }
 
-    int idx = rand() % candidatesCount;
+    uint16 idx = rand() % candidatesCount;
     return candidates[idx];    
 }
 
-boolean hasConflicts(int arr[], int size) {
+boolean hasConflicts(uint16 arr[], uint16 size) {
     return totalConflicts > 0;
 }
 
-void updateConflicts(int arr[], int size, int newRow, int oldRow, int col) {
+void updateConflicts(uint16 arr[], uint16 size, uint16 newRow, uint16 oldRow, uint16 col) {
 
-    for (int x = 0; x < size; x++) {
+    for (uint16 x = 0; x < size; x++) {
         if (x == col) {
             continue;
         }
 
-        int y = arr[x];
+        uint16 y = arr[x];
 
         if (y == newRow || abs(y - newRow) == abs(x - col)) {
             g_conflicts[x]++;
@@ -192,17 +199,17 @@ void updateConflicts(int arr[], int size, int newRow, int oldRow, int col) {
     totalConflicts += g_conflicts[col];
 }
 
-boolean findSolution(int arr[], int size) {
-    const int MAX_ITERATIONS = 3 * size;
+boolean findSolution(uint16 arr[], uint16 size) {
+    const uint16 MAX_ITERATIONS = 3 * size;
 
     resetBoard(arr, size);
     calculateConflicts(arr, size);
 
-    for (int i = 0; i < MAX_ITERATIONS; i++) {
-        int col = getColWithMaxConflicts(arr, size);
+    for (uint16 i = 0; i < MAX_ITERATIONS; i++) {
+        uint16 col = getColWithMaxConflicts(arr, size);
 
-        int oldRow = arr[col];
-        int newRow = getRowWithMinConflicts(arr, size, col);
+        uint16 oldRow = arr[col];
+        uint16 newRow = getRowWithMinConflicts(arr, size, col);
 
         if (oldRow != newRow) {
             arr[col] = newRow;
@@ -217,10 +224,10 @@ boolean findSolution(int arr[], int size) {
     return FALSE;
 }
 
-void solve(int arr[], int size) {
-    const int MAX_RETRIES = 5;
+void solve(uint16 arr[], uint16 size) {
+    const uint16 MAX_RETRIES = 5;
 
-    for (int i = 0; i < MAX_RETRIES; i++) {
+    for (uint16 i = 0; i < MAX_RETRIES; i++) {
         if (findSolution(arr, size)) {
             printf("Success!\n");
             // printBoard(arr, size);
@@ -232,11 +239,11 @@ void solve(int arr[], int size) {
     exit(EXIT_FAILURE);
 }
 
-int main() {
+uint16 main() {
     srand(time(0));
 
-    int boardSize = 1000;
-    int rowIndex[BOARD_MAX_SIZE];
+    uint16 boardSize = 1000;
+    uint16 rowIndex[BOARD_MAX_SIZE];
 
     solve(rowIndex, boardSize);
 
