@@ -1,6 +1,49 @@
-//------------------------------------------------------------------------------
-// INCLUDED FILES
-//------------------------------------------------------------------------------
+/*! N-Queen problem
+ *  
+ * \brief       Place N chess queens on an N×N chessboard so that no two queens attack each other.
+ * \author      Boris Ivanov
+ *  
+ * The provided solution implements MinConflicts algorithm (LSA, Hill Climbing).
+ *
+ * Results: 
+ *       - n = 1000 -> T = 1 s
+ *       - n = 10000 -> T = 550 s
+ *
+ * We will put all queens in different columns and change only their row. 
+ *       => We can store the board with 1-D array, keeping only the row of the current queen.
+ *
+ * Example: N = 4. rows[] = {1, 3, 0, 2}
+ *                               _ _ * _
+ *                               * _ _ _
+ *                               _ _ _ *
+ *                               _ * _ _
+ *
+ * Pseudocode:
+ *       rows[N] = rand[N]
+ *       K = {2, 3}
+ *       MAX_ITERATIONS = N * K
+ *
+ *       for (i : 1, MAX_ITERATIONS)
+ *           col = getColWithMaxConflicts()
+ *           row = getRowWithMinConflicts(col)
+ *           
+ *           rows[col] = row;
+ *
+ *           if (!hasConflicts())
+ *               print "Solution was found!"
+ *               exit
+ *
+ *       restart // no solution was found
+ *
+ * Optimizations:
+ *       - On rows initialization, put every queen on different row.
+ *       - RandomRestart: Generate random board on every restart. (But keep every queen on different row. => Random shuffle)
+ *       - getColWithMaxConflicts() : if more than one candidate, choose randomly between the candidates
+ *       - getRowWithMinConflicts(col) : if more than one candidate, choose randomly between the candidates
+ *       - Keep static look-up table for the conflicts of the queen: conflicts[size];
+ *       - Keep total count of conflicts => hasConflicts() - O(1)
+ *
+**/
 
 #include <cstdio>
 #include <cstdlib>
@@ -9,46 +52,38 @@
 #include <cmath>
 #include <algorithm>
 
-//------------------------------------------------------------------------------
-// TYPE DEFINITIONS
-//------------------------------------------------------------------------------
-
-typedef char               sint8;
-typedef unsigned char      uint8;
-typedef short              sint16;
-typedef unsigned short     uint16;
-typedef int                sint32;
-typedef unsigned int       uint32;
-typedef long long          sint64;
-typedef unsigned long long uint64;
-
-//------------------------------------------------------------------------------
-// GLOBAL CONSTANTS DEFINITIONS
-//------------------------------------------------------------------------------
-
-const uint16 BOARD_MAX_SIZE = 12000;
-
-//------------------------------------------------------------------------------
-// PUBLIC FUNCTIONS
-//------------------------------------------------------------------------------
+const int BOARD_MAX_SIZE = 12000;
 
 class Board {
 public:
-    uint16 rows[BOARD_MAX_SIZE];
-    uint16 size;
-    uint16 conflicts[BOARD_MAX_SIZE];
-    uint16 conflictsCount;
+    int rows[BOARD_MAX_SIZE];
+    int size;
+    int conflicts[BOARD_MAX_SIZE];
+    int conflictsCount;
 
 private:
-    uint16 getConflictsOfCell(uint16 row, uint16 col) {
-        uint16 conflicts = 0;
+    /*! \brief      Calculates the number of conflicts for a given cell.
+     * \param       row: row index
+     * \param       col: col index
+     * \return      Number of Conflicts for the specified cell by row, col
+     *
+     * Only horizontal, main diagonal and secondary diagonal conflicts are counted
+     * because the queens are guaranteed to be in different columns.
+     *
+     * Since vertical conflicts are not calculated, it is possible to calculate
+     * the conflicts for given queen in all possible rows, without acctually moving 
+     * the queen to other row. For example: given col and row = rows[col], we can 
+     * calculate the conflicts of cell [row + 2] [col] without the need of moving the queen +2 rows.
+    **/
+    int getConflictsOfCell(int row, int col) {
+        int conflicts = 0;
 
-        for (uint16 x = 0; x < size; x++) {
+        for (int x = 0; x < size; x++) {
             if (x == col) {
                 continue;
             }
 
-            uint16 y = rows[x];
+            int y = rows[x];
 
             if (y == row || abs(y - row) == abs(x - col)) {
                 conflicts++;
@@ -59,19 +94,20 @@ private:
     }
 
 public:
-    Board(uint16 size) {
+    Board(int size) {
         this->size = size;
         this->conflictsCount = 0;
     }
 
+    /// \brief      Print the whole board
     void printBoard() {
-        for (uint16 i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             printf("%d ", rows[i]);
         }
         printf("\n");
 
-        for (uint16 i = 0; i < size; i++) {
-            for (uint16 j = 0; j < size; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 if (rows[j] != i) {
                     printf("_ ");
                 }
@@ -85,34 +121,55 @@ public:
         printf("\n");
     }
 
+    /*! \brief      Checks if there are conflicts on the board
+     * \return      true / false
+    **/
+    bool hasConflicts() {
+        return conflictsCount > 0;
+    }
+
+    /*! \brief      Reset the current board (this->rows)
+     * 
+     * Every queen is put to new line and then random shuffle is performed.
+    **/
     void reset() {
-        for (uint16 i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             rows[i] = i;
         }
 
-        for (uint16 i = 0; i < size; i++) {
-            uint16 j = rand() % size;
+        for (int i = 0; i < size; i++) {
+            int j = rand() % size;
             std::swap(rows[i], rows[j]);
         }    
     }
 
+    /*! \brief      Calculates the conflicts of every queen.
+     * 
+     * This method is used to initially calculate the conflicts for every queen.
+    **/
     void calculateConflicts() {
         conflictsCount = 0;
-        for (uint16 i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             conflicts[i] = getConflictsOfCell(rows[i], i);
             conflictsCount += conflicts[i];
         }
     }
 
-    uint16 getColWithMaxConflicts() {
-        uint16 colWithMaxConflicts = 0;
-        uint16 maxConflicts = 0;
+    /*! \brief      Finds the queen that has most conflicts.
+     * \return      Column (queen) with max conflicts
+     *
+     * If there is more than one queen with the max conflicts, 
+     * choose randomly between all the candidates.
+    **/
+    int getColWithMaxConflicts() {
+        int colWithMaxConflicts = 0;
+        int maxConflicts = 0;
 
-        uint16 candidates[BOARD_MAX_SIZE];
-        uint16 candidatesCount = 0;
+        int candidates[BOARD_MAX_SIZE];
+        int candidatesCount = 0;
 
-        for (uint16 col = 0; col < size; col++) {
-            uint16 currConflicts = conflicts[col];
+        for (int col = 0; col < size; col++) {
+            int currConflicts = conflicts[col];
 
             if (currConflicts > maxConflicts) {
                 maxConflicts = currConflicts;
@@ -126,24 +183,29 @@ public:
             }
         }
 
-        uint16 idx = rand() % candidatesCount;
+        int idx = rand() % candidatesCount;
         return candidates[idx];    
     }
 
-    // Return: the rowIndex where the queen will make minimum conflicts
-    uint16 getRowWithMinConflicts(uint16 col) {
-        uint16 rowWithMinConflicts = rows[col];
-        uint16 minConflictsCount = 30000;
+    /*! \brief      Finds the queen that has most conflicts.
+     * \return      The rowIndex where the queen will make(have) minimum conflicts
+     *
+     * If there is more than one row with min conflicts, 
+     * choose randomly between all the candidates.
+    **/
+    int getRowWithMinConflicts(int col) {
+        int rowWithMinConflicts = rows[col];
+        int minConflictsCount = 30000;
 
-        uint16 candidates[BOARD_MAX_SIZE];
-        uint16 candidatesCount = 0;
+        int candidates[BOARD_MAX_SIZE];
+        int candidatesCount = 0;
 
-        for (uint16 row = 0; row < size; row++) {
+        for (int row = 0; row < size; row++) {
             if (row == rows[col]) {
                 continue;
             }
 
-            uint16 conflicts = getConflictsOfCell(row, col);
+            int conflicts = getConflictsOfCell(row, col);
 
             if (conflicts < minConflictsCount) {
                 rowWithMinConflicts = row;
@@ -157,22 +219,28 @@ public:
             }
         }
 
-        uint16 idx = rand() % candidatesCount;
+        int idx = rand() % candidatesCount;
         return candidates[idx];
     }
 
-
-    bool hasConflicts() {
-        return conflictsCount > 0;
-    }
-
-    void updateConflicts(uint16 newRow, uint16 oldRow, uint16 col) {
-        for (uint16 x = 0; x < size; x++) {
+    /*! \brief      Updates the static lookup table of the conflicts for the affected queens and the total conflictsCount.
+    *  \param       newRow: index of the new row of the queen
+    *  \param       oldRow: index of the old row of the queen
+    *  \param       col: index of the column of the queen
+     *
+     * For every queen except the current, 
+     * check if newRow / oldRow affects the conflicts
+     * and update accordingly. Finally, 
+     * calculate the conflicts for the current col, because 
+     * conflicts[col] keeps the conflicts of the old position.
+    **/
+    void updateConflicts(int newRow, int oldRow, int col) {
+        for (int x = 0; x < size; x++) {
             if (x == col) {
                 continue;
             }
 
-            uint16 y = rows[x];
+            int y = rows[x];
 
             if (y == newRow || abs(y - newRow) == abs(x - col)) {
                 conflicts[x]++;
@@ -189,21 +257,25 @@ public:
         conflicts[col] = getConflictsOfCell(rows[col], col);
         conflictsCount += conflicts[col];
     }
-
 };
 
 
+/*! \brief      Tries to find a solution for the NQueens problem implementing MinConflicts algorithm
+ * \param       board
+ * \return      true if solution is found
+ *              false if no solution is found for MAX_ITERATIONS, return false
+**/
 bool findSolution(Board &board) {
-    const uint16 MAX_ITERATIONS = 3 * board.size;
+    const int MAX_ITERATIONS = 3 * board.size;
 
     board.reset();
     board.calculateConflicts();
 
-    for (uint16 i = 0; i < MAX_ITERATIONS; i++) {
-        uint16 col = board.getColWithMaxConflicts();
+    for (int i = 0; i < MAX_ITERATIONS; i++) {
+        int col = board.getColWithMaxConflicts();
 
-        uint16 oldRow = board.rows[col];
-        uint16 newRow = board.getRowWithMinConflicts(col);
+        int oldRow = board.rows[col];
+        int newRow = board.getRowWithMinConflicts(col);
 
         if (oldRow != newRow) {
             board.rows[col] = newRow;
@@ -218,13 +290,18 @@ bool findSolution(Board &board) {
     return false;
 }
 
-void solve(Board &board) {
-    const uint16 MAX_RETRIES = 5;
+/*! \brief      Start MinConflicts until a solution is found or MAX_RETRIES are elpased. 
+ * \param       board
+**/
+void solve(Board &board, bool canPrintSolution) {
+    const int MAX_RETRIES = 5;
 
-    for (uint16 i = 0; i < MAX_RETRIES; i++) {
+    for (int i = 0; i < MAX_RETRIES; i++) {
         if (findSolution(board)) {
             printf("Success!\n");
-            // printBoard();
+            if (canPrintSolution) {
+                board.printBoard();
+            }
             exit(EXIT_SUCCESS);
         }
     }
@@ -233,13 +310,31 @@ void solve(Board &board) {
     exit(EXIT_FAILURE);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
     srand(time(0));
 
-    uint16 boardSize = 10000;
+    int boardSize = 1000;
+    int canPrintSolution = false;
+
+    /// Set boardSize from command line argument
+    if (argc >= 2) {
+        boardSize = atoi(argv[1]);
+    }
+
+    /// Set canPrintSolution from command line argument
+    if (argc >= 3) {
+        if (strcmp(argv[2], "y") == 0) {
+            canPrintSolution = true;
+        }
+        else {
+            canPrintSolution = false;
+        }
+    }
+
     Board board(boardSize);
 
-    solve(board);
+    solve(board, canPrintSolution);
 
     return EXIT_SUCCESS;
 }
