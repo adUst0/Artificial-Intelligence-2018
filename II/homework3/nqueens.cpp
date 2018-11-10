@@ -294,7 +294,7 @@ bool findSolution(Board &board) {
  * \param       board
 **/
 void solve(Board &board, bool canPrintSolution) {
-    const int MAX_RETRIES = 5;
+    const int MAX_RETRIES = 1000;
 
     for (int i = 0; i < MAX_RETRIES; i++) {
         if (findSolution(board)) {
