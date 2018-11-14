@@ -40,9 +40,20 @@
  *       - RandomRestart: Generate random board on every restart. (But keep every queen on different row. => Random shuffle)
  *       - getColWithMaxConflicts() : if more than one candidate, choose randomly between the candidates
  *       - getRowWithMinConflicts(col) : if more than one candidate, choose randomly between the candidates
- *       - Keep static look-up table for the conflicts of the queen: conflicts[size];
- *       - Keep total count of conflicts => hasConflicts() - O(1)
- *
+ *       - Keep static look-up table for the conflicts of the queen:
+            - queensInMainDiag[2 * size - 1] - keeps count of the queens in every "right diagonal". How are they stored:
+                // Main diagonals index for 3 * 3 board => 5 "right" diagonals in total
+                // |1|2|3|
+                // |4|1|2|    
+                // |5|4|1|
+
+            - queensInSecDiag[2 * size - 1] - keeps count of the queens in every "left diagonal". How are they stored:
+                // Secondary diagonals index
+                // |1|2|3|
+                // |2|3|4|    
+                // |3|4|5|
+
+            - queensInRow[size] - keeps count of the queens in every row
 **/
 
 #include <cstdio>
@@ -51,56 +62,50 @@
 #include <ctime>
 #include <cmath>
 #include <algorithm>
-
-const int BOARD_MAX_SIZE = 12000;
+#include <vector>
 
 class Board {
 public:
-    int rows[BOARD_MAX_SIZE];
+    std::vector<int> rows;
     int size;
-    int conflicts[BOARD_MAX_SIZE];
-    int conflictsCount;
+    
+    std::vector<int> queensInMainDiag; // keeps count of the queens in every "right diagonal".
+    std::vector<int> queensInSecDiag; // keeps count of the queens in every "right diagonal".
+    std::vector<int> queensInRow; // keeps count of the queens in every row
 
 private:
-    /*! \brief      Calculates the number of conflicts for a given cell.
-     * \param       row: row index
-     * \param       col: col index
-     * \return      Number of Conflicts for the specified cell by row, col
-     *
-     * Only horizontal, main diagonal and secondary diagonal conflicts are counted
-     * because the queens are guaranteed to be in different columns.
-     *
-     * Since vertical conflicts are not calculated, it is possible to calculate
-     * the conflicts for given queen in all possible rows, without acctually moving 
-     * the queen to other row. For example: given col and row = rows[col], we can 
-     * calculate the conflicts of cell [row + 2] [col] without the need of moving the queen +2 rows.
-    **/
-    int getConflictsOfCell(int row, int col) {
-        int conflicts = 0;
-
-        for (int x = 0; x < size; x++) {
-            if (x == col) {
-                continue;
-            }
-
-            int y = rows[x];
-
-            if (y == row || abs(y - row) == abs(x - col)) {
-                conflicts++;
-            }
+    // Main diagonals index example
+    // |1|2|3|
+    // |4|1|2|    
+    // |5|4|1|
+    int getMainDiagonalIndexForCell(int row, int col) {
+        if (col - row > 0) {
+            return col - row;
         }
+        else {
+            return abs(col - row) + this->size - 1;
+        }
+    }
 
-        return conflicts;
+    // Secondary diagonals index example
+    // |1|2|3|
+    // |2|3|4|    
+    // |3|4|5|
+    int getSecDiagonalIndexForCell(int row, int col) {
+        return row + col;
     }
 
 public:
-    Board(int size) {
+    Board(int size) : rows(std::vector<int>(size)),
+        queensInMainDiag(std::vector<int>(size * 2 - 1)), 
+        queensInSecDiag(std::vector<int>(size * 2 - 1)), 
+        queensInRow(std::vector<int>(size))
+     {
         this->size = size;
-        this->conflictsCount = 0;
     }
 
     /// \brief      Print the whole board
-    void printBoard() {
+    void print() {
         for (int i = 0; i < size; i++) {
             printf("%d ", rows[i]);
         }
@@ -125,7 +130,18 @@ public:
      * \return      true / false
     **/
     bool hasConflicts() {
-        return conflictsCount > 0;
+        for (int col = 0; col < size; col++) {
+            if (getConflictsOfQueen(col) > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    int getConflictsOfQueen(int col) {
+        int row = rows[col];
+        return queensInRow[row] + queensInMainDiag[getMainDiagonalIndexForCell(row, col)] + queensInSecDiag[getSecDiagonalIndexForCell(row, col)] - 3;
     }
 
     /*! \brief      Reset the current board (this->rows)
@@ -140,18 +156,25 @@ public:
         for (int i = 0; i < size; i++) {
             int j = rand() % size;
             std::swap(rows[i], rows[j]);
-        }    
+        }
     }
 
     /*! \brief      Calculates the conflicts of every queen.
      * 
-     * This method is used to initially calculate the conflicts for every queen.
+     * TODO documentation
     **/
     void calculateConflicts() {
-        conflictsCount = 0;
-        for (int i = 0; i < size; i++) {
-            conflicts[i] = getConflictsOfCell(rows[i], i);
-            conflictsCount += conflicts[i];
+        std::fill(queensInRow.begin(), queensInRow.end(), 0);
+        std::fill(queensInMainDiag.begin(), queensInMainDiag.end(), 0);
+        std::fill(queensInSecDiag.begin(), queensInSecDiag.end(), 0);
+
+        for (int col = 0; col < size; col++) {
+            int row = rows[col];
+
+            queensInRow[row]++;
+            queensInMainDiag[getMainDiagonalIndexForCell(row, col)]++;
+            queensInSecDiag[getSecDiagonalIndexForCell(row, col)]++;
+            
         }
     }
 
@@ -165,11 +188,12 @@ public:
         int colWithMaxConflicts = 0;
         int maxConflicts = 0;
 
-        int candidates[BOARD_MAX_SIZE];
+        std::vector<int> candidates(size);
         int candidatesCount = 0;
 
         for (int col = 0; col < size; col++) {
-            int currConflicts = conflicts[col];
+            int row = rows[col];
+            int currConflicts = queensInRow[row] + queensInMainDiag[getMainDiagonalIndexForCell(row, col)] + queensInSecDiag[getSecDiagonalIndexForCell(row, col)];
 
             if (currConflicts > maxConflicts) {
                 maxConflicts = currConflicts;
@@ -197,7 +221,7 @@ public:
         int rowWithMinConflicts = rows[col];
         int minConflictsCount = 30000;
 
-        int candidates[BOARD_MAX_SIZE];
+        std::vector<int> candidates(size);
         int candidatesCount = 0;
 
         for (int row = 0; row < size; row++) {
@@ -205,16 +229,16 @@ public:
                 continue;
             }
 
-            int conflicts = getConflictsOfCell(row, col);
+            int confl = queensInRow[row] + queensInMainDiag[getMainDiagonalIndexForCell(row, col)] + queensInSecDiag[getSecDiagonalIndexForCell(row, col)];
 
-            if (conflicts < minConflictsCount) {
+            if (confl < minConflictsCount) {
                 rowWithMinConflicts = row;
-                minConflictsCount = conflicts;
+                minConflictsCount = confl;
 
                 candidatesCount = 0;
                 candidates[candidatesCount++] = row;
             }
-            else if (conflicts == minConflictsCount) {
+            else if (confl == minConflictsCount) {
                 candidates[candidatesCount++] = row;
             }
         }
@@ -235,27 +259,13 @@ public:
      * conflicts[col] keeps the conflicts of the old position.
     **/
     void updateConflicts(int newRow, int oldRow, int col) {
-        for (int x = 0; x < size; x++) {
-            if (x == col) {
-                continue;
-            }
+        queensInRow[oldRow]--;
+        queensInMainDiag[getMainDiagonalIndexForCell(oldRow, col)]--;
+        queensInSecDiag[getSecDiagonalIndexForCell(oldRow, col)]--;
 
-            int y = rows[x];
-
-            if (y == newRow || abs(y - newRow) == abs(x - col)) {
-                conflicts[x]++;
-                conflictsCount++;
-            }
-
-            if (y == oldRow || abs(y - oldRow) == abs(x - col)) {
-                conflicts[x]--;
-                conflictsCount--;
-            }
-        }
-
-        conflictsCount -= conflicts[col];
-        conflicts[col] = getConflictsOfCell(rows[col], col);
-        conflictsCount += conflicts[col];
+        queensInRow[newRow]++;
+        queensInMainDiag[getMainDiagonalIndexForCell(newRow, col)]++;
+        queensInSecDiag[getSecDiagonalIndexForCell(newRow, col)]++;
     }
 };
 
@@ -300,7 +310,7 @@ void solve(Board &board, bool canPrintSolution) {
         if (findSolution(board)) {
             printf("Success!\n");
             if (canPrintSolution) {
-                board.printBoard();
+                board.print();
             }
             exit(EXIT_SUCCESS);
         }
@@ -333,7 +343,6 @@ int main(int argc, char *argv[]) {
     }
 
     Board board(boardSize);
-
     solve(board, canPrintSolution);
 
     return EXIT_SUCCESS;
