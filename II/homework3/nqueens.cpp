@@ -6,8 +6,11 @@
  * The provided solution implements MinConflicts algorithm (LSA, Hill Climbing).
  *
  * Results: 
- *       - n = 1000 -> T = 1 s
- *       - n = 10000 -> T = 550 s
+ *       - n = 1000 -> T = 0.01 s
+ *       - n = 10000 -> T = 0.28 s
+ *       - n = 20000 -> T = 1.20 s
+ *       - n = 30000 -> T = 2.89 s
+ *       - n = 50000 -> T = 8.65 s
  *
  * We will put all queens in different columns and change only their row. 
  *       => We can store the board with 1-D array, keeping only the row of the current queen.
@@ -41,19 +44,19 @@
  *       - getColWithMaxConflicts() : if more than one candidate, choose randomly between the candidates
  *       - getRowWithMinConflicts(col) : if more than one candidate, choose randomly between the candidates
  *       - Keep static look-up table for the conflicts of the queen:
-            - queensInMainDiag[2 * size - 1] - keeps count of the queens in every "right diagonal". How are they stored:
-                // Main diagonals index for 3 * 3 board => 5 "right" diagonals in total
-                // |1|2|3|
-                // |4|1|2|    
-                // |5|4|1|
-
-            - queensInSecDiag[2 * size - 1] - keeps count of the queens in every "left diagonal". How are they stored:
-                // Secondary diagonals index
-                // |1|2|3|
-                // |2|3|4|    
-                // |3|4|5|
-
-            - queensInRow[size] - keeps count of the queens in every row
+ *           - queensInMainDiag[2 * size - 1] - keeps count of the queens in every "right diagonal". How are they stored:
+ *               // Main diagonals index for 3 * 3 board => 5 "right" diagonals in total
+ *               // |1|2|3|
+ *               // |4|1|2|    
+ *               // |5|4|1|
+ *
+ *          - queensInSecDiag[2 * size - 1] - keeps count of the queens in every "left diagonal". How are they stored:
+ *              // Secondary diagonals index
+ *              // |1|2|3|
+ *              // |2|3|4|    
+ *              // |3|4|5|
+ *
+ *          - queensInRow[size] - keeps count of the queens in every row
 **/
 
 #include <cstdio>
@@ -68,16 +71,20 @@ class Board {
 public:
     std::vector<int> rows;
     int size;
-    
+
+private:
     std::vector<int> queensInMainDiag; // keeps count of the queens in every "right diagonal".
     std::vector<int> queensInSecDiag; // keeps count of the queens in every "right diagonal".
     std::vector<int> queensInRow; // keeps count of the queens in every row
 
-private:
-    // Main diagonals index example
-    // |1|2|3|
-    // |4|1|2|    
-    // |5|4|1|
+    /*! \brief      Finds in which "left" diagonal belongs the specified cell
+     * \return      Diagonal in which the specified cell belongs
+     *
+     * Main diagonals index example for N = 3
+     * |1|2|3|
+     * |4|1|2|
+     * |5|4|1|
+    **/
     int getMainDiagonalIndexForCell(int row, int col) {
         if (col - row > 0) {
             return col - row;
@@ -87,10 +94,14 @@ private:
         }
     }
 
-    // Secondary diagonals index example
-    // |1|2|3|
-    // |2|3|4|    
-    // |3|4|5|
+    /*! \brief      Finds in which "right" diagonal belongs the specified cell
+     * \return      Diagonal in which the specified cell belongs
+     *
+     * Secondary diagonals index example for N = 3
+     * |1|2|3|
+     * |2|3|4|    
+     * |3|4|5|
+    **/
     int getSecDiagonalIndexForCell(int row, int col) {
         return row + col;
     }
@@ -161,7 +172,7 @@ public:
 
     /*! \brief      Calculates the conflicts of every queen.
      * 
-     * TODO documentation
+     * This function is invoked only after reset of the board. 
     **/
     void calculateConflicts() {
         std::fill(queensInRow.begin(), queensInRow.end(), 0);
@@ -247,16 +258,10 @@ public:
         return candidates[idx];
     }
 
-    /*! \brief      Updates the static lookup table of the conflicts for the affected queens and the total conflictsCount.
-    *  \param       newRow: index of the new row of the queen
-    *  \param       oldRow: index of the old row of the queen
-    *  \param       col: index of the column of the queen
-     *
-     * For every queen except the current, 
-     * check if newRow / oldRow affects the conflicts
-     * and update accordingly. Finally, 
-     * calculate the conflicts for the current col, because 
-     * conflicts[col] keeps the conflicts of the old position.
+    /*! \brief      Updates the static lookup arrays of the conflicts for the affected queens.
+     *  \param       newRow: index of the new row of the queen
+     *  \param       oldRow: index of the old row of the queen
+     *  \param       col: index of the column of the queen
     **/
     void updateConflicts(int newRow, int oldRow, int col) {
         queensInRow[oldRow]--;
@@ -324,15 +329,15 @@ int main(int argc, char *argv[]) {
 
     srand(time(0));
 
-    int boardSize = 1000;
+    int boardSize = 10000;
     int canPrintSolution = false;
 
-    /// Set boardSize from command line argument
+    // Set boardSize from command line argument
     if (argc >= 2) {
         boardSize = atoi(argv[1]);
     }
 
-    /// Set canPrintSolution from command line argument
+    // Set canPrintSolution from command line argument
     if (argc >= 3) {
         if (strcmp(argv[2], "y") == 0) {
             canPrintSolution = true;
