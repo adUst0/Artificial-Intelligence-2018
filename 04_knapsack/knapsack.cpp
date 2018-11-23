@@ -1,22 +1,12 @@
 #include <iostream>
 #include <ctime>
+#include <string>
 #include <vector>
 #include <queue>
 #include <cassert>
+#include <algorithm>
 
 using namespace std;
-
-using boolean = uint8_t;
-
-std::ostream& operator<<(std::ostream& os, const boolean& value)
-{
-    return os << static_cast<bool>(value);
-}
-
-struct item {
-    int weight;
-    int value;
-};
 
 //==============================================================================
 // CONFIGURATION
@@ -24,174 +14,208 @@ struct item {
 
 const int KNAPSACK_CAPACITY = 5000;
 
-const int POPULATION_SIZE = 50;
-const int SELECTED_INDIVIDS_COUNT = static_cast<int>(POPULATION_SIZE * 0.5);
-const int MAX_GENERATIONS = 100;
+const int POPULATION_SIZE = 300;
+const int MAX_GENERATIONS = 500;
+const float PMUTATION = 0.9;
+
+struct item {
+    int weight;
+    int value;
+};
 
 vector<item> items {
-        {90, 150}, // map
-        {130, 35}, // compass
-        {1530, 200}, // water
-        {500, 160}, // sandwich
-        {150, 60}, // glucose
-        {680, 45}, // tin
-        {270, 60}, // banana
-        {390, 40}, // apple
-        {230, 30}, // cheese
-        {520, 10}, // beer
-        {110, 70}, // suntan cream
-        {320, 30}, // camera
-        {240, 15}, // T-shirt
-        {480, 10}, // trousers
-        {730, 40}, // umbrella
-        {420, 70}, // waterproof trousers
-        {430, 75}, // waterproof overclothes
-        {220, 80}, // note-case
-        {70, 20}, // sunglasses
-        {180, 12}, // towel
-        {40, 50}, // socks
-        {300, 10}, // book
-        {900, 1}, // notebook
-        {2000, 150} // tent
+    {90, 150}, // map
+    {130, 35}, // compass
+    {1530, 200}, // water
+    {500, 160}, // sandwich
+    {150, 60}, // glucose
+    {680, 45}, // tin
+    {270, 60}, // banana
+    {390, 40}, // apple
+    {230, 30}, // cheese
+    {520, 10}, // beer
+    {110, 70}, // suntan cream
+    {320, 30}, // camera
+    {240, 15}, // T-shirt
+    {480, 10}, // trousers
+    {730, 40}, // umbrella
+    {420, 70}, // waterproof trousers
+    {430, 75}, // waterproof overclothes
+    {220, 80}, // note-case
+    {70, 20}, // sunglasses
+    {180, 12}, // towel
+    {40, 50}, // socks
+    {300, 10}, // book
+    {900, 1}, // notebook
+    {2000, 150} // tent
 };
+
 //==============================================================================
 // IMPLEMENTATION
 //==============================================================================
 
-// One individ is one possible knapsack configuration
-class Individ {
-private:
-    vector<boolean> isPresent; // flag if items[i] is inside the knapsack.
+// Generate random number in the interval [first, last]
+int rand(int first, int last) {
+    return rand() % (last - first + 1) + first;
+}
 
-public:
-    static const vector<item>& items;
+using Chromosome = vector<bool>;
+using Population = vector<Chromosome>;
 
-    Individ() : isPresent(items.size()) {}
+int getWeight(Chromosome chromosome) {
+    int weight = 0;
 
-    Individ(const vector<boolean>& isPresent) : isPresent(isPresent) {}
-
-    Individ(const Individ& other) : isPresent(other.isPresent) {}
-
-    boolean& operator[](int i) {
-        return isPresent[i];
+    for (int i = 0; i < chromosome.size(); i++) {
+        if (chromosome[i]) {
+            weight += items[i].weight;
+        }
     }
 
-    int getFitness() const {
-        int fitness = 0;
+    return weight;
+}
 
-        for (int i = 0; i < isPresent.size(); i++) {
-            if (isPresent[i]) {
-                fitness += items[i].value;
+int getFitness(Chromosome chromosome) {
+    int fitness = 0;
+
+    for (int i = 0; i < chromosome.size(); i++) {
+        if (chromosome[i]) {
+            fitness += items[i].value;
+        }
+    }
+
+    return fitness;
+}
+
+void sortPopulation(Population& population) {
+    sort(population.begin(), population.end(),
+            [](const Chromosome& a, const Chromosome& b) {
+                return getFitness(a) > getFitness(b);
+            });
+}
+
+Population generatePopulation() {
+    Population population;
+    int chromosomeLength = items.size();
+
+    for (int i = 0; i < POPULATION_SIZE; i++) {
+        Chromosome chromosome(chromosomeLength, false);
+
+        for (int i = 0; i < chromosomeLength * 2; i++) {
+            int itemIndex = rand(0, chromosomeLength - 1);
+            int currentWeight = getWeight(chromosome);
+            int newWeight = currentWeight + items[itemIndex].weight;
+
+            if (!chromosome[itemIndex] && newWeight <= KNAPSACK_CAPACITY) {
+                chromosome[itemIndex] = true;
             }
         }
 
-        return fitness;
-    }
-
-    int getWeight() const {
-        int weight = 0;
-
-        for (int i = 0; i < isPresent.size(); i++) {
-            if (isPresent[i]) {
-                weight += items[i].weight;
-            }
-        }
-
-        return weight;
-    }
-};
-
-const vector<item>& Individ::items = ::items;
-
-vector<Individ> generatePopulation(int populationSize) {
-    vector<Individ> population();
-
-    for (int i = 0; i < populationSize; i++) {
-        for (int j = 0; j < Individ::items.size(); j++) {
-            bool canAdd = rand() % 2;
-
-            if (canAdd) {
-                if (population[i].getWeight() + Individ::items[j].weight <= KNAPSACK_CAPACITY) {
-                    population[i][j] = true;
-                }
-                else {
-                    break;
-                }
-            }
-        }
+        population.push_back(chromosome);
     }
 
     return population;
 }
 
-vector<Individ> selection(const vector<Individ>& population) {
-    vector<Individ> selected;
 
-    // <fitness, index>
-    priority_queue<pair<int, int> > pq;
-    for (int i = 0; i <= population.size(); i++) {
-        pq.push(make_pair(population[i].getFitness(), i));
+// This function expects population to be sorted in descending order
+Population selectParents(const Population& population) {
+    Population parents;
+
+    int parent1 = rand(0, population.size() / 10);
+    int parent2 = rand(0, population.size() / 10);
+
+    while (parent1 == parent2) {
+        parent2 = rand(0, population.size() / 10);
     }
 
-    for (int i = 0; i < SELECTED_INDIVIDS_COUNT; i++) {
-        Individ individ(population[pq.top().second]);
-        selected.push_back(individ);
-        pq.pop();
-    }
+    parents.push_back(population[parent1]);
+    parents.push_back(population[parent2]);
 
-    return selected;
+    return parents;
 }
 
-// vector<Individ> crossover(const vector<Individ>& population) {
-//     // TODO
-// }
+Population crossover(const Population& parents) {
+    const int chromosomeLength = items.size();
+    Population offspring(2, Chromosome(chromosomeLength, false));
 
-// vector<Individ> mutation(const vector<Individ>& population) {
-//     // TODO
-// }
+    int idx;
 
+    for (int i = 0; i < chromosomeLength; i++) {
+        idx = rand(0, 1);
+        if (idx == 1) {
+            offspring[0][i] = parents[0][i];
+            offspring[1][i] = parents[1][i];
+        }
+        else {
+            offspring[0][i] = parents[1][i];
+            offspring[1][i] = parents[0][i];
+        }
+    }
 
-void testGenerataionOfPopulation();
-void testSelection();
-void testCrossover();
-void testMutation();
+    return offspring;
+}
+
+void mutate(Population& offspring) {
+    int chromosomeLength = offspring[0].size();
+
+    for (int i = 0; i < offspring.size(); i++) {
+        int gene = rand(0, chromosomeLength - 1);
+
+        float pmutation = rand(0, 1000);
+
+        if (pmutation <= 1000 * PMUTATION) {
+            offspring[i][gene] = !offspring[i][gene];
+        }
+
+    }
+}
+
+void printPopulation(Population& population) {
+    for (Chromosome& c : population) {
+        cout << "Value: " << getFitness(c) << endl;
+        cout << "Weight: " << getWeight(c) << "\n\n";
+    }
+}
 
 int main() {
     srand(time(0));
 
-    vector<Individ> population = generatePopulation(POPULATION_SIZE);
-    Individ bestSolution();
+    Population population = generatePopulation();
 
-    for (int i = 0; i < population.size(); i++) {
-        cout << population[i].getFitness() << " " << population[i].getWeight() << endl;
+    sortPopulation(population);
+    Chromosome bestSolution = population[0];
+
+    cout << "Initial population best solution:" << endl;
+    cout << "\t" << getFitness(bestSolution) << endl;
+    cout << "\t" << getWeight(bestSolution) << endl;
+
+    for (int i = 0; i < MAX_GENERATIONS; i++) {
+        Population parents = selectParents(population);
+        Population offspring = crossover(parents);
+        mutate(offspring);
+
+        bool hasValidOfspring = false;
+        // replace the less fittest with the offspring
+        if (getWeight(offspring[0]) <= KNAPSACK_CAPACITY) {
+            population[population.size() - 1] = offspring[0];
+            hasValidOfspring = true;
+        }
+        if (getWeight(offspring[1]) <= KNAPSACK_CAPACITY) {
+            population[population.size() - 2] = offspring[1];
+            hasValidOfspring = true;
+        }
+
+        if (hasValidOfspring) {
+            sortPopulation(population);
+            if (getFitness(population[0]) > getFitness(bestSolution)) {
+                bestSolution = population[0];
+            }
+        }
     }
 
-    population = selection(population);
-
-    cout << "Selection: " << endl;
-    for (int i = 0; i < population.size(); i++) {
-        cout << population[i].getFitness() << " " << population[i].getWeight() << endl;
-    }
-
-    // for (int i = 0; i < MAX_GENERATIONS; i++) {
-    //     // TODO: chech if better solution was found
-    //     population = selection(population);
-    //     // population = crossover(population);
-    //     // population = mutation(population);
-    // }
+    cout << "Best solution found:" << endl;
+    cout << "\t" << getFitness(bestSolution) << endl;
+    cout << "\t" << getWeight(bestSolution) << endl;
 
     return 0;
-}
-
-void testGenerataionOfPopulation() {
-    vector<Individ> population = generatePopulation(5);
-
-    for (int i = 0; i < population.size(); i++) {
-        assert(population[i].getWeight() <= KNAPSACK_CAPACITY);
-        cout << population[i].getWeight() << ": ";
-        for (int j = 0; j < items.size(); j++) {
-            cout << population[i][j] << " ";
-        }
-        cout << endl;
-    }
 }
