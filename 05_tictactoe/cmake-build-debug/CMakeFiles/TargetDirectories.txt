@@ -1,0 +1,3 @@
+D:/Workspace/C++/ArtificialInteligence2018/05_tictactoe/cmake-build-debug/CMakeFiles/tictactoe.dir
+D:/Workspace/C++/ArtificialInteligence2018/05_tictactoe/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Workspace/C++/ArtificialInteligence2018/05_tictactoe/cmake-build-debug/CMakeFiles/rebuild_cache.dir
