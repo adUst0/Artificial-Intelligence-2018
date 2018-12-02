@@ -103,12 +103,12 @@ public:
 //==============================================================================
 
 // Alpha-beta algorithm
-Board AlphaBetaDecision(Board& board);
-int MaxValue(Board& board, int alpha, int beta);
-int MinValue(Board& board, int alpha, int beta);
+Board AlphaBetaDecision(const Board& board);
+int MaxValue(const Board& board, int alpha, int beta, int &depth);
+int MinValue(const Board& board, int alpha, int beta, int &depth);
 
 // Helper functions
-vector<Board> getChildren(Board &board, char player);
+vector<Board> getChildren(const Board &board, char player);
 int getTerminalStateValue(const Board& board);
 bool isTerminalState(const Board &board);
 
@@ -116,17 +116,24 @@ bool isTerminalState(const Board &board);
  * \param       board current state in game
  * \return      Best possible move for MAX
 **/
-Board AlphaBetaDecision(Board& board) {
+Board AlphaBetaDecision(const Board& board) {
     int maxValue = -1;
+    int bestDepth = s32INF;
     Board bestBoard = board;
 
     vector<Board> children = getChildren(board, PLAYER_MAX);
 
     for (auto child : children) {
-        int value = MinValue(child, -s32INF, s32INF);
+        int depth = 0;
+        int value = MinValue(child, -s32INF, s32INF, depth);
 
         if (value > maxValue) {
             maxValue = value;
+            bestBoard = child;
+            bestDepth = depth;
+        }
+        else if (value == maxValue && depth < bestDepth) {
+            bestDepth = depth;
             bestBoard = child;
         }
     }
@@ -140,9 +147,12 @@ Board AlphaBetaDecision(Board& board) {
  *              to state
  * \param       beta the value of the best alternative for min along the path
  *              to state
+ * \param       depth current depth in the tree. Its value is updated during
+ *              the traverse. This way the root knows the depth of the solution
  * \return      1 or 0 or -1
 **/
-int MaxValue(Board& board, int alpha, int beta) {
+int MaxValue(const Board& board, int alpha, int beta, int &depth) {
+    depth++;
     if (isTerminalState(board)) {
         return getTerminalStateValue(board);
     }
@@ -151,7 +161,7 @@ int MaxValue(Board& board, int alpha, int beta) {
     vector<Board> children = getChildren(board, PLAYER_MAX);
 
     for (auto child : children) {
-        best = std::max(best, MinValue(child, alpha, beta));
+        best = std::max(best, MinValue(child, alpha, beta, depth));
 
         if (best >= beta) {
             return best;
@@ -169,9 +179,12 @@ int MaxValue(Board& board, int alpha, int beta) {
  *              to state
  * \param       beta the value of the best alternative for min along the path
  *              to state
+ * \param       depth current depth in the tree. Its value is updated during
+ *              the traverse. This way the root knows the depth of the solution
  * \return      1 or 0 or -1
 **/
-int MinValue(Board& board, int alpha, int beta) {
+int MinValue(const Board& board, int alpha, int beta, int &depth) {
+    depth++;
     if (isTerminalState(board)) {
         return getTerminalStateValue(board);
     }
@@ -180,7 +193,7 @@ int MinValue(Board& board, int alpha, int beta) {
     vector<Board> children = getChildren(board, PLAYER_MIN);
 
     for (auto child : children) {
-        best = std::min(best, MaxValue(child, alpha, beta));
+        best = std::min(best, MaxValue(child, alpha, beta, depth));
 
         if (best <= alpha) {
             return best;
@@ -198,7 +211,7 @@ int MinValue(Board& board, int alpha, int beta) {
  * \param       player the player who is in turn
  * \return      all possible moves for this player
 **/
-vector<Board> getChildren(Board &board, char player) {
+vector<Board> getChildren(const Board &board, char player) {
     vector<Board> children;
 
     for (int i = 0; i < 3; i++) {
@@ -320,7 +333,7 @@ public:
         cout << "==================================================" << endl;
         cout << "*                 Tic-tac-toe AI                 *" << endl;
         cout << "*                                                *" << endl;
-        cout << "* - Player plays with O                          *" << endl;
+        cout << "* - Human plays with O                           *" << endl;
         cout << "* - AI plays with X                              *" << endl;
         cout << "==================================================\n\n";
     }
@@ -363,3 +376,20 @@ int main() {
 
     return 0;
 }
+
+// Test if the algorithm is optimal:
+//
+// The current board is this and AI is in turn:
+// x|o|o|
+// x| | |
+//  | | |
+//
+// If AI doesn't consider the DEPTH, next move will be
+// x|o|o|
+// x|x| |
+//  | | |
+//
+// If the algorithm is optimal (i.e. depth included), next move is:
+// x|o|o|
+// x| | |
+// x| | |
