@@ -14,6 +14,12 @@
 # EXTERNAL cache entries
 ########################
 
+//Value Computed by CMake
+05_tictactoe_BINARY_DIR:STATIC=D:/Workspace/C++/ArtificialInteligence2018/05_tictactoe/cmake-build-debug
+
+//Value Computed by CMake
+05_tictactoe_SOURCE_DIR:STATIC=D:/Workspace/C++/ArtificialInteligence2018/05_tictactoe
+
 //Path to a program.
 CMAKE_AR:FILEPATH=C:/MinGW/bin/ar.exe
 
@@ -150,7 +156,7 @@ CMAKE_OBJCOPY:FILEPATH=C:/MinGW/bin/objcopy.exe
 CMAKE_OBJDUMP:FILEPATH=C:/MinGW/bin/objdump.exe
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=tictactoe
+CMAKE_PROJECT_NAME:STATIC=05_tictactoe
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=C:/MinGW/bin/ranlib.exe

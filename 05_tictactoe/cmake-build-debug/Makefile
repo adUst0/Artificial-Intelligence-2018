@@ -55,17 +55,6 @@ CMAKE_BINARY_DIR = D:\Workspace\C++\ArtificialInteligence2018\05_tictactoe\cmake
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	"C:\Program Files\JetBrains\CLion 2018.2.5\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available."
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -76,6 +65,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	"C:\Program Files\JetBrains\CLion 2018.2.5\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available."
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -110,17 +110,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named tictactoe
+# Target rules for targets named 05_tictactoe
 
 # Build rule for target.
-tictactoe: cmake_check_build_system
-	$(MAKE) -f CMakeFiles\Makefile2 tictactoe
-.PHONY : tictactoe
+05_tictactoe: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 05_tictactoe
+.PHONY : 05_tictactoe
 
 # fast build rule for target.
-tictactoe/fast:
-	$(MAKE) -f CMakeFiles\tictactoe.dir\build.make CMakeFiles/tictactoe.dir/build
-.PHONY : tictactoe/fast
+05_tictactoe/fast:
+	$(MAKE) -f CMakeFiles\05_tictactoe.dir\build.make CMakeFiles/05_tictactoe.dir/build
+.PHONY : 05_tictactoe/fast
 
 tictactoe.obj: tictactoe.cpp.obj
 
@@ -128,7 +128,7 @@ tictactoe.obj: tictactoe.cpp.obj
 
 # target to build an object file
 tictactoe.cpp.obj:
-	$(MAKE) -f CMakeFiles\tictactoe.dir\build.make CMakeFiles/tictactoe.dir/tictactoe.cpp.obj
+	$(MAKE) -f CMakeFiles\05_tictactoe.dir\build.make CMakeFiles/05_tictactoe.dir/tictactoe.cpp.obj
 .PHONY : tictactoe.cpp.obj
 
 tictactoe.i: tictactoe.cpp.i
@@ -137,7 +137,7 @@ tictactoe.i: tictactoe.cpp.i
 
 # target to preprocess a source file
 tictactoe.cpp.i:
-	$(MAKE) -f CMakeFiles\tictactoe.dir\build.make CMakeFiles/tictactoe.dir/tictactoe.cpp.i
+	$(MAKE) -f CMakeFiles\05_tictactoe.dir\build.make CMakeFiles/05_tictactoe.dir/tictactoe.cpp.i
 .PHONY : tictactoe.cpp.i
 
 tictactoe.s: tictactoe.cpp.s
@@ -146,7 +146,7 @@ tictactoe.s: tictactoe.cpp.s
 
 # target to generate assembly for a file
 tictactoe.cpp.s:
-	$(MAKE) -f CMakeFiles\tictactoe.dir\build.make CMakeFiles/tictactoe.dir/tictactoe.cpp.s
+	$(MAKE) -f CMakeFiles\05_tictactoe.dir\build.make CMakeFiles/05_tictactoe.dir/tictactoe.cpp.s
 .PHONY : tictactoe.cpp.s
 
 # Help Target
@@ -155,9 +155,9 @@ help:
 	@echo ... all (the default if no target is provided)
 	@echo ... clean
 	@echo ... depend
-	@echo ... tictactoe
-	@echo ... edit_cache
 	@echo ... rebuild_cache
+	@echo ... 05_tictactoe
+	@echo ... edit_cache
 	@echo ... tictactoe.obj
 	@echo ... tictactoe.i
 	@echo ... tictactoe.s
