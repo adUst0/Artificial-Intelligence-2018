@@ -1,4 +1,4 @@
-/*! Machine Learning: Supervised learning. K Nearest Neighbours.
+/*! Machine Learning: Supervised learning. Implement кNearestNeighbours.
  *
  * \brief       Homework 6
  * \author      Boris Ivanov
@@ -20,64 +20,87 @@
  *  - Accuracy (correctly classified / total testing entries)
 **/
 
+//==============================================================================
+// INCLUDED FILES
+//==============================================================================
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <queue>
 #include <algorithm>
 #include <cmath>
 #include <ctime>
 
 using namespace std;
 
-static const int DATASET_COLS = 5;
-static const int CLASS_POS = 4; // last column is the class to which the entry belongs
-static const int CLASSES_COUNT = 3; // all possible classes to which an entry can belong
-
+//==============================================================================
+// CONFIGURATION
+//==============================================================================
+static const int PROPERTIES_COUNT = 4; // the number of properties of one entry in the data set
+static const int CLASSES_COUNT = 3; // the number of different classes in the data set
 static const int TESTING_SET_SIZE = 20;
 
-using Entry = vector<float>;
-using Dataset = vector<Entry>;
+string class_int2string(int entryClass) {
+    switch (entryClass) {
+        case 0:
+            return string("Iris-setosa");
+        case 1:
+            return string("Iris-versicolor");
+        case 2:
+            return string("Iris-virginica");
+        default:
+            cout << "class_int2string: Unknown class!" << endl;
+            exit(EXIT_FAILURE);
+    }
+}
 
-void ReadDatabase(Dataset &dataset, const char *name) {
-    ifstream data(name);
-
-    if (!data.is_open()) {
-        cout << "Dataset file not found!" << endl;
+int class_string2int(const string& entryClass) {
+    if (entryClass == "Iris-setosa") {
+        return 0;
+    }
+    else if (entryClass == "Iris-versicolor") {
+        return 1;
+    }
+    else if (entryClass == "Iris-virginica") {
+        return 2;
+    }
+    else {
+        cout << "class_string2int: Unknown class!" << endl;
         exit(EXIT_FAILURE);
     }
+}
 
-    while (true) {
-        if (data.eof()) {
-            break;
-        }
+//==============================================================================
+// IMPLEMENTATION
+//==============================================================================
+struct Entry {
+    vector<float> raw;
+    int entryClass;
 
-        Entry entry(DATASET_COLS);
+    Entry(int propertiesCount) : raw(vector<float>(propertiesCount)) {
 
-        for (int i = 0; i < DATASET_COLS - 1; i++) {
-            float x;
-            char comma;
-            data >> x >> comma;
-            entry[i] = x;
-        }
-        string entryClass;
-        data >> entryClass;
-
-        if (entryClass == "Iris-setosa") {
-            entry[CLASS_POS] = 1;
-        }
-        else if (entryClass == "Iris-versicolor") {
-            entry[CLASS_POS] = 2;
-        }
-        else if (entryClass == "Iris-virginica") {
-            entry[CLASS_POS] = 3;
-        }
-
-        dataset.push_back(entry);
     }
 
-    data.close();
-}
+    friend istream& operator>>(istream &is, Entry& entry) {
+        for (int i = 0; i < entry.raw.size(); i++) {
+            char comma;
+            is >> entry.raw[i] >> comma;
+        }
+
+        string entryClass;
+        is >> entryClass;
+        entry.entryClass = class_string2int(entryClass);
+
+        return is;
+    }
+
+    friend ostream& operator<<(ostream &os, Entry& entry) {
+        for (int i = 0; i < entry.raw.size(); i++) {
+            os << entry.raw[i] << ",";
+        }
+        os << class_int2string(entry.entryClass);
+        return os;
+    }
+};
 
 class EntryComparator {
     const Entry& entry;
@@ -85,8 +108,8 @@ class EntryComparator {
     double calculateDistance(const Entry& point) {
         double sum = 0;
 
-        for (int i = 0; i < DATASET_COLS - 1; i++) {
-            sum += pow(entry[i] - point[i], 2);
+        for (int i = 0; i < entry.raw.size(); i++) {
+            sum += (entry.raw[i] - point.raw[i]) * (entry.raw[i] - point.raw[i]);
         }
 
         return sqrt(sum);
@@ -99,50 +122,70 @@ public:
     }
 };
 
-int classify(const Entry& entry, Dataset& dataset, int k) {
+void ReadDatabase(vector<Entry> &dataset, const char *name) {
+    ifstream inFile(name);
+    if (!inFile.is_open()) {
+        cout << "ReadDatabase: Dataset file \"" << name << " \" not found!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    while (true) {
+        if (inFile.eof()) {
+            break;
+        }
+
+        Entry entry(PROPERTIES_COUNT);
+        inFile >> entry;
+
+        dataset.push_back(entry);
+    }
+
+    inFile.close();
+}
+
+int classify(const Entry& entry, vector<Entry> &dataset, int k) {
     sort(dataset.begin(), dataset.end(), EntryComparator(entry));
 
-    vector<int> count(CLASSES_COUNT, 0);
-
+    // find first K neighbours
+    vector<int> classesCount(CLASSES_COUNT, 0);
     for (int i = 0; i < k; i++) {
-        count[dataset[i][CLASS_POS]]++;
+        classesCount[dataset[i].entryClass]++;
     }
 
-    vector<int> candidates(dataset.size());
+    // if several with maxOccurrences, choose the class with the nearest entry
+    vector<int> candidates(CLASSES_COUNT);
     int candidatesCount = 0;
-    int maxOccurrences = 0;
+    int maxOccurrences = -1;
 
-    for (int i = 0; i < count.size(); i++) {
-        if (count[i] > maxOccurrences) {
+    for (int i = 0; i < CLASSES_COUNT; i++) {
+        if (classesCount[i] > maxOccurrences) {
+            maxOccurrences = classesCount[i];
             candidatesCount = 0;
             candidates[candidatesCount++] = i;
-            maxOccurrences = count[i];
         }
-        else if (count[i] == maxOccurrences) {
+        else if (classesCount[i] == maxOccurrences) {
             candidates[candidatesCount++] = i;
         }
     }
 
-    if (candidatesCount == 1) {
-        return candidates[0];
-    }
-    else {
-        for (int i = 0; i < k; i++) {
-            if (find(candidates.begin(), candidates.end(), (int)dataset[i][CLASS_POS]) != candidates.begin()) {
-                return (int)dataset[i][CLASS_POS];
-            }
+    for (int i = 0; i < k; i++) {
+        if (find(candidates.begin(), candidates.begin() + 1, dataset[i].entryClass) != candidates.end()) {
+            return dataset[i].entryClass;
         }
     }
+    // this line can not be reached
+    cout << "classify: Unknown class!" << endl;
+    exit(EXIT_FAILURE);
 };
 
-int main() {
+int main(int argc, char *argv[]) {
     srand(time(0));
 
-    Dataset database;
+    vector<Entry> database;
     ReadDatabase(database, "./../Dataset/iris.data");
 
-    Dataset trainingData;
-    Dataset testingData;
+    vector<Entry> trainingData;
+    vector<Entry> testingData;
 
     random_shuffle(database.begin(), database.end());
 
@@ -155,41 +198,22 @@ int main() {
         }
     }
 
-    for (int i = 0; i < testingData.size(); i++) {
-        int entryClass = classify(testingData[i], trainingData, (int)sqrt(trainingData.size()));
+    int K = (argc == 1) ? (int)sqrt(trainingData.size()) : atoi(argv[1]);
 
-        cout << testingData[i][0] << ',' << testingData[i][1] << ',' << testingData[i][2] << ',' << testingData[i][3] << ',';
+    int correctPredictions = 0;
 
-        switch (entryClass) {
-            case 1:
-                cout << "Iris-setosa";
-                break;
-            case 2:
-                cout << "Iris-versicolor";
-                break;
-            case 3:
-                cout << "Iris-virginica";
-                break;
-            default:
-                cout << "Unknown entry class!";
-
-        }
-        cout << " -> ";
-        switch ((int)testingData[i][4]) {
-            case 1:
-                cout << "Iris-setosa" << endl;
-                break;
-            case 2:
-                cout << "Iris-versicolor" << endl;
-                break;
-            case 3:
-                cout << "Iris-virginica" << endl;
-                break;
-            default:
-                cout << testingData[i][4] << " " << (int)testingData[i][4] << " " <<"Unknown entry class!" << endl;
-
+    for (auto entry : testingData) {
+        int entryClass = classify(entry, trainingData, K);
+        // cout << entry << endl;
+        // cout << "\tPrediction: " << class_int2string(entryClass) << endl;
+        if (entryClass == entry.entryClass) {
+            correctPredictions++;
         }
     }
+
+    cout << "Correct predictions: " << correctPredictions << endl;
+    cout << "Incorrect predictions: " << TESTING_SET_SIZE - correctPredictions << endl;
+    cout << "Accuracy: " << (float)correctPredictions / TESTING_SET_SIZE * 100 << "%" << endl;
 
     return EXIT_SUCCESS;
 }
