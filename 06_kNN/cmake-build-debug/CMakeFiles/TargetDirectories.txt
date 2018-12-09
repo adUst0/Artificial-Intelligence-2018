@@ -1,0 +1,3 @@
+D:/Workspace/C++/ArtificialInteligence2018/06_kNN/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/Workspace/C++/ArtificialInteligence2018/06_kNN/cmake-build-debug/CMakeFiles/06_kNN.dir
+D:/Workspace/C++/ArtificialInteligence2018/06_kNN/cmake-build-debug/CMakeFiles/edit_cache.dir

@@ -1,0 +1,4 @@
+"C:\Program Files\JetBrains\CLion 2018.2.5\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" D:\Workspace\C++\ArtificialInteligence2018\06_kNN
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/Workspace/C++/ArtificialInteligence2018/06_kNN/cmake-build-debug

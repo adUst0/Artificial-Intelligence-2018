@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/Workspace/C++/ArtificialInteligence2018/06_kNN/kNN.cpp
+iostream
+-
+vector
+-
+fstream
+-
+queue
+-
+algorithm
+-
+cmath
+-
+
