@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/Workspace/C++/ArtificialInteligence2018/07_naiveBayes/naiveBayes.cpp
+iostream
+-
+vector
+-
+fstream
+-
+ctime
+-
+unordered_map
+-
+algorithm
+-
+
