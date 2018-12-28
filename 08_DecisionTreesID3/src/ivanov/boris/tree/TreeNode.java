@@ -1,14 +1,21 @@
+package ivanov.boris.tree;
+
 import java.util.*;
 
 public class TreeNode {
     private List<TreeNode> children = new ArrayList<>();
-    private int value = -1;
-    private String edge = null;
+    private int value = -1; // index of the attribute
+    private String edge = null; // value of the edge between parent node and this node
 
     public TreeNode() {}
 
     public TreeNode(int value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
     }
 
     public TreeNode getChild(int index) {
@@ -64,42 +71,27 @@ public class TreeNode {
 
     public void printBFS() {
         Queue<TreeNode> q = new LinkedList<>();
+        Queue<TreeNode> parents = new LinkedList<>();
         Queue<Integer> level = new LinkedList<>();
         List<TreeNode> visited = new ArrayList<>();
 
         q.add(this);
+        parents.add(new TreeNode());
         level.add(0);
 
         while (!q.isEmpty()) {
             TreeNode node = q.poll();
+            TreeNode parent = parents.poll();
             int currentLevel = level.poll();
             visited.add(node);
-            System.out.println(currentLevel + ": " + node.getValue());
+            System.out.println("Level: " + currentLevel + ": " + "Value: " +
+                    node.toString() + " (Parent: " + parent.getValue() + "; Edge: " + node.getEdge() + ")");
 
             for (TreeNode child : node.getChildren()) {
                 q.add(child);
+                parents.add(node);
                 level.add(currentLevel + 1);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        TreeNode treeNode = new TreeNode();
-        treeNode.setValue(2);
-
-        treeNode.addChild(new TreeNode(1));
-        treeNode.addChild(new TreeNode(4));
-        treeNode.addChild(new TreeNode(7));
-
-        treeNode.getChild(1).addChild(new TreeNode(6));
-        treeNode.getChild(2).addChild(new TreeNode(8));
-
-        treeNode.getChild(2).getChild(0).addChild(new TreeNode(9));
-        treeNode.getChild(2).getChild(0).addChild(new TreeNode(10));
-        treeNode.getChild(2).getChild(0).addChild(new TreeNode(11));
-
-        treeNode.printDFS();
-        System.out.println("\n\n");
-        treeNode.printBFS();
     }
 }
