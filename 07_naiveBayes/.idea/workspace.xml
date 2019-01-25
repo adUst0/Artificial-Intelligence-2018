@@ -13,6 +13,15 @@
   <component name="ChangeListManager">
     <list default="true" id="f1e64502-cff2-4a08-bdb1-bc30f325e959" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/naiveBayes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/naiveBayes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../08_DecisionTreesID3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../08_DecisionTreesID3/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../08_DecisionTreesID3/src/ivanov/boris/id3/ID3DecisionTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/../08_DecisionTreesID3/src/ivanov/boris/id3/ID3DecisionTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../09_KMeans/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../09_KMeans/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../09_KMeans/img/normal.png" beforeDir="false" afterPath="$PROJECT_DIR$/../09_KMeans/img/normal.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../09_KMeans/img/unbalance.png" beforeDir="false" afterPath="$PROJECT_DIR$/../09_KMeans/img/unbalance.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../09_KMeans/out/production/09_KMeans/ivanov/boris/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../09_KMeans/out/production/09_KMeans/ivanov/boris/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../09_KMeans/src/ivanov/boris/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../09_KMeans/src/ivanov/boris/Main.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,21 +35,24 @@
     <session id="-1235504498">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="5" />
+          <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.13" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.open.time.8" value="1" />
+          <entry key="project.opened" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="3403" />
+          <entry key="cpp" value="3687" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Doxygen file" value="17" />
-          <entry key="ObjectiveC" value="3386" />
+          <entry key="Doxygen file" value="21" />
+          <entry key="ObjectiveC" value="3666" />
         </counts>
       </usages-collector>
     </session>
@@ -50,11 +62,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/naiveBayes.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="152" column="53" selection-start-line="152" selection-start-column="53" selection-end-line="152" selection-end-column="53" />
+            <state relative-caret-position="240">
+              <caret line="27" column="3" selection-start-line="27" selection-start-column="3" selection-end-line="27" selection-end-column="3" />
               <folding>
-                <element signature="e#1110#1129#0" expanded="true" />
-                <element signature="e#1884#1896#0" expanded="true" />
+                <element signature="e#1872#1884#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -79,10 +90,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-13" />
-    <option name="y" value="110" />
-    <option name="width" value="1550" />
-    <option name="height" value="838" />
+    <option name="x" value="-1830" />
+    <option name="y" value="202" />
+    <option name="width" value="1240" />
+    <option name="height" value="672" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -90,7 +101,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -102,11 +112,13 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="full.screen.before.presentation.mode" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
@@ -151,27 +163,30 @@
       <updated>1544963082174</updated>
       <workItem from="1544963084238" duration="11863000" />
       <workItem from="1545429624547" duration="57000" />
+      <workItem from="1546702897622" duration="472000" />
+      <workItem from="1546789198283" duration="5000" />
+      <workItem from="1547847501017" duration="21000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11920000" />
+    <option name="totallyTimeSpent" value="12418000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="-1928" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.3167785" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.20255864" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="1" />
       <window_info anchor="bottom" id="Event Log" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="3" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="4" weight="0.3275488" />
+      <window_info anchor="bottom" id="Messages" order="4" weight="0.32624114" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" />
-      <window_info anchor="bottom" id="Run" order="7" weight="0.3778409" />
+      <window_info anchor="bottom" id="Run" order="7" weight="0.46241134" />
       <window_info anchor="bottom" id="Debug" order="8" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="CMake" order="10" />
@@ -217,11 +232,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/naiveBayes.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="152" column="53" selection-start-line="152" selection-start-column="53" selection-end-line="152" selection-end-column="53" />
+        <state relative-caret-position="240">
+          <caret line="27" column="3" selection-start-line="27" selection-start-column="3" selection-end-line="27" selection-end-column="3" />
           <folding>
-            <element signature="e#1110#1129#0" expanded="true" />
-            <element signature="e#1884#1896#0" expanded="true" />
+            <element signature="e#1872#1884#0" expanded="true" />
           </folding>
         </state>
       </provider>

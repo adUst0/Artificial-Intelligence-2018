@@ -21,8 +21,8 @@ public class Main {
     private static final String IMG_FOLDER_PATH = "img/";
 
     public static void main(String[] args) {
-        run(NORMAL_PATH, CLUSTERS_COUNT);
-        run(UNBALANCE_PATH, CLUSTERS_COUNT);
+        run(NORMAL_PATH, 5);
+        run(UNBALANCE_PATH, 5);
     }
 
     private static void run(String fileName, int clustersCount) {

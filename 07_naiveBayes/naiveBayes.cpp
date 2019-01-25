@@ -21,6 +21,10 @@
  *  contribution to the outcome.
  *
  *  To overcome the 'zero frequency problem', add one to the count for every attribute
+ *
+ *  TODO:
+ *  If there are many attributes, multiplying the probabilities may lead to overflow.
+ *  To overcome this problem, we can work with logarithms. (which replaces multiplication with addition)
 **/
 
 //==============================================================================

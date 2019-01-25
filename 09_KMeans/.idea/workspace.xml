@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ae6439d0-f413-418a-8a0c-0e591448e25a" name="Default Changelist" comment="" />
+    <list default="true" id="ae6439d0-f413-418a-8a0c-0e591448e25a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../07_naiveBayes/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../07_naiveBayes/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../07_naiveBayes/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../07_naiveBayes/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../07_naiveBayes/naiveBayes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../07_naiveBayes/naiveBayes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../08_DecisionTreesID3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../08_DecisionTreesID3/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../08_DecisionTreesID3/src/ivanov/boris/id3/ID3DecisionTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/../08_DecisionTreesID3/src/ivanov/boris/id3/ID3DecisionTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/normal.png" beforeDir="false" afterPath="$PROJECT_DIR$/img/normal.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/unbalance.png" beforeDir="false" afterPath="$PROJECT_DIR$/img/unbalance.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/09_KMeans/ivanov/boris/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/09_KMeans/ivanov/boris/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ivanov/boris/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ivanov/boris/Main.java" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -10,7 +21,32 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/ivanov/boris/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="19" column="48" selection-start-line="19" selection-start-column="48" selection-end-line="19" selection-end-column="48" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ivanov/boris/KMeansAlgorithm.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2975">
+              <caret line="180" column="5" selection-start-line="180" selection-start-column="5" selection-end-line="180" selection-end-column="5" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -39,11 +75,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-1481" />
-    <option name="y" value="113" />
-    <option name="width" value="987" />
-    <option name="height" value="831" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="950" />
+    <option name="width" value="979" />
+    <option name="height" value="1040" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -51,6 +86,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -61,38 +98,19 @@
             <path>
               <item name="09_KMeans" type="b2602c69:ProjectViewProjectNode" />
               <item name="09_KMeans" type="462c0819:PsiDirectoryNode" />
-              <item name="img" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="09_KMeans" type="b2602c69:ProjectViewProjectNode" />
-              <item name="09_KMeans" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="09_KMeans" type="b2602c69:ProjectViewProjectNode" />
-              <item name="09_KMeans" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="boris" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="09_KMeans" type="b2602c69:ProjectViewProjectNode" />
-              <item name="09_KMeans" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="boris" type="462c0819:PsiDirectoryNode" />
-              <item name="dataset" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1546090158412" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
@@ -141,16 +159,21 @@
       <workItem from="1545992410735" duration="2463000" />
       <workItem from="1546034169541" duration="2200000" />
       <workItem from="1546077824484" duration="10938000" />
+      <workItem from="1546092078113" duration="94000" />
+      <workItem from="1546121552339" duration="98000" />
+      <workItem from="1546703699704" duration="484000" />
+      <workItem from="1546710612998" duration="26000" />
+      <workItem from="1546710669998" duration="4000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="15601000" />
+    <option name="totallyTimeSpent" value="16307000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1928" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="760" y="0" width="783" height="832" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11140725" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25172892" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -159,7 +182,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.08125677" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2320917" />
       <window_info anchor="bottom" x="-457" y="170" width="1878" height="351" id="Debug" maximized="true" order="3" weight="0.37811485" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -189,16 +212,6 @@
     <entry file="file://$PROJECT_DIR$/Datasets/unbalance/unbalance.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ivanov/boris/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1275">
-          <caret line="75" column="53" lean-forward="true" selection-start-line="75" selection-start-column="53" selection-end-line="75" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ivanov/boris/dataset/Point2D.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="52">
@@ -213,9 +226,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ivanov/boris/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="19" column="48" selection-start-line="19" selection-start-column="48" selection-end-line="19" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ivanov/boris/KMeansAlgorithm.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="664">
+        <state relative-caret-position="2975">
           <caret line="180" column="5" selection-start-line="180" selection-start-column="5" selection-end-line="180" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />

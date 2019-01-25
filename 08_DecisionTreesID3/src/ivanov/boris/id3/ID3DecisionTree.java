@@ -8,6 +8,8 @@ import ivanov.boris.tree.TreeNode;
 import java.util.ArrayList;
 import java.util.List;
 
+// How to overcome overfitting? => Pruning (post-pruning, pre-pruning), Ensemble learning
+
 public class ID3DecisionTree {
 
     public static TreeNode createTree(Dataset dataset, List<Integer> attributes) {
