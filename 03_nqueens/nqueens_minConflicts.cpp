@@ -44,13 +44,13 @@
  *       - getColWithMaxConflicts() : if more than one candidate, choose randomly between the candidates
  *       - getRowWithMinConflicts(col) : if more than one candidate, choose randomly between the candidates
  *       - Keep static look-up table for the conflicts of the queen:
- *           - queensInMainDiag[2 * size - 1] - keeps count of the queens in every "right diagonal". How are they stored:
- *               // Main diagonals index for 3 * 3 board => 5 "right" diagonals in total
+ *           - queensInMainDiag[2 * size - 1] - keeps count of the queens in every "left diagonal". How are they stored:
+ *               // Main diagonals index for 3 * 3 board => 5 "left" diagonals in total
  *               // |1|2|3|
  *               // |4|1|2|    
  *               // |5|4|1|
  *
- *          - queensInSecDiag[2 * size - 1] - keeps count of the queens in every "left diagonal". How are they stored:
+ *          - queensInSecDiag[2 * size - 1] - keeps count of the queens in every "right diagonal". How are they stored:
  *              // Secondary diagonals index
  *              // |1|2|3|
  *              // |2|3|4|    
@@ -73,7 +73,7 @@ public:
     int size;
 
 private:
-    std::vector<int> queensInMainDiag; // keeps count of the queens in every "right diagonal".
+    std::vector<int> queensInMainDiag; // keeps count of the queens in every "left diagonal".
     std::vector<int> queensInSecDiag; // keeps count of the queens in every "right diagonal".
     std::vector<int> queensInRow; // keeps count of the queens in every row
 
